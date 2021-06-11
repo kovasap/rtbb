@@ -1,7 +1,7 @@
 extends Node2D
 
 var color = Color(0, 1, 0, 1)
-var velocity = 10
+var velocity = 100
 
 func get_closest_char(other_characters):
 	var closest_dist = INF
@@ -19,7 +19,7 @@ func get_closest_char(other_characters):
 func move(other_characters):
 	var closest_char = get_closest_char(other_characters)
 	var direction = self.position.direction_to(closest_char.position)
-	self.position = self.position + velocity * direction
+	self.linear_velocity = velocity * direction
 
 
 # Called when the node enters the scene tree for the first time.
