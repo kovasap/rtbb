@@ -4,10 +4,12 @@
 [ext_resource path="res://Projectile.gd" type="Script" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 3.10747, 10.6095 )
+extents = Vector2( 2.05396, 10.6095 )
 
 [node name="Projectile" type="RigidBody2D"]
 gravity_scale = 0.0
+linear_damp = 0.416
+angular_damp = 5.749
 script = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -19,6 +21,6 @@ scale = Vector2( 1, 1 )
 texture = ExtResource( 1 )
 
 [node name="AliveTimer" type="Timer" parent="."]
-wait_time = 0.305
+wait_time = 0.1
 autostart = true
 [connection signal="timeout" from="AliveTimer" to="." method="_on_AliveTimer_timeout"]
