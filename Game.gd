@@ -14,12 +14,12 @@ func make_character(pos, color):
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	var friendly = make_character(Vector2(50, 50), Color(0, 1, 0, 1))
-	var friendly2 = make_character(Vector2(50, 100), Color(0, 1, 0, 1))
-	var enemy = make_character(Vector2(500, 50), Color(1, 0, 0, 1))
-	var enemy2 = make_character(Vector2(250, 250), Color(1, 0, 0, 1))
+	var friendly = make_character(Vector2(100, 200), Color(0, 1, 0, 1))
+	# var friendly2 = make_character(Vector2(50, 100), Color(0, 1, 0, 1))
+	var enemy = make_character(Vector2(700, 200), Color(1, 0, 0, 1))
+	# var enemy2 = make_character(Vector2(250, 250), Color(1, 0, 0, 1))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	for character in characters:
-		character.move(characters)
+		character.act(self)
