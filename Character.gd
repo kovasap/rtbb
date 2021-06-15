@@ -1,5 +1,8 @@
 extends Node2D
 
+var in_shop = false
+const cost = 2
+
 var color = Color(0, 1, 0, 1)
 var faction = 'friendly'
 var velocity = 50
@@ -20,7 +23,6 @@ var cooldown = 0
 # Drag and drop character
 # https://generalistprogrammer.com/godot/godot-drag-and-drop-tutorial/
 var dragging = false
-signal dragsignal;
 
 func get_closest_char(other_characters):
 	var closest_dist = INF
@@ -64,7 +66,6 @@ func shoot(direction):
 
 
 func _ready():
-	connect("dragsignal", self, "_set_drag_pc")
 	for i in range(max_health):
 		var heart = Sprite.new()
 		heart.texture = load("res://item_sprites/16x16 RPG Item Pack/Item__29.png")
@@ -107,13 +108,18 @@ func _on_Character_body_entered(body):
 		body.stuck = true
 		body.set_owner(self)
 
-func _set_drag_pc():
-	dragging = !dragging
-
-func _on_Character_input_event(viewport, event, shape_idx):
-	print(event)
+func _on_Character_input_event(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT and event.pressed:
-			emit_signal("dragsignal")
+			dragging = true
 		elif event.button_index == BUTTON_LEFT and !event.pressed:
-			emit_signal("dragsignal")
+			dragging = false
+
+func _on_Character_input_event_shop(event):
+	if event is InputEventMouseButton:
+		if event.button_index == BUTTON_LEFT and event.pressed:
+			if get_parent().gold > cost:
+				get_parent().buy_character(self)
+				_on_Character_input_event(null, event, null)
+			else:
+				print('not enough money!')
