@@ -1,6 +1,7 @@
 extends Node2D
 
 var gold = 10
+var shop_open = false
 
 var cur_level = 0
 # Each level describes enemy positions for that level.
@@ -14,14 +15,17 @@ const levels = [
 
 var character_pool = []
 
+var party_characters = []
+
 var paused = true
-var characters = []
+var battlefield_characters = []
 
 onready var char_scene = load("res://Character.tscn")
 func make_character(pos, faction):
 	var character = char_scene.instance()
 	add_child(character)
 	character.position = pos
+	character.start_position = pos
 	character.faction = faction
 	if faction == 'enemy':
 		character.color = Color(1, 0, 0, 1)
@@ -30,25 +34,26 @@ func make_character(pos, faction):
 	return character
 
 func load_next_level():
-	for c in characters:
+	for c in battlefield_characters:
 		if c.faction == 'enemy':
+			c.visible = false
 			remove_child(c)
+		elif c.faction == 'friendly':
+			c.reset()
 	cur_level += 1
+	if cur_level >= 2:
+		cur_level = 2
 	for enemy_position in levels[cur_level]:
 		var enemy = make_character(enemy_position, 'enemy')
-		characters.append(enemy)
+		battlefield_characters.append(enemy)
 		enemy.rate_of_fire = 500
-
-func open_shop():
-	$ShopGUI.visible = true
-	$StartRoundButton.visible = true
-	$ShopGUI.refresh_shop()
 
 func buy_character(c):
 	gold -= c.cost
 	$ShopGUI.update()
 	c.in_shop = false
-	characters.append(c)
+	battlefield_characters.append(c)
+	party_characters.append(c)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -57,20 +62,20 @@ func _ready():
 		pool_character.visible = false
 		character_pool.append(pool_character)
 	var friendly = make_character(Vector2(400, 180), 'friendly')
-	characters.append(friendly)
+	battlefield_characters.append(friendly)
 	load_next_level()
-	open_shop()
+	$ShopGUI.open_shop()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if not paused:
-		for character in characters:
+		for character in battlefield_characters:
 			character.act(self)
 
 	var battle_won = true
 	var battle_lost = true
 
-	for c in characters:
+	for c in battlefield_characters:
 		if c.faction == 'enemy' and not c.dead:
 			battle_won = false
 		if c.faction == 'friendly' and not c.dead:
@@ -81,9 +86,9 @@ func _process(delta):
 		if battle_lost:
 			$ResultAnnouncement.text = 'Battle %s Lost!' % cur_level
 		$ResultAnnouncement.visible = true
-		open_shop()
+		if not shop_open:
+			$ShopGUI.open_shop()
+			load_next_level()
 
 func _on_Button_pressed():
-	$ShopGUI.visible = false
-	$StartRoundButton.visible = false
-	paused = false
+	$ShopGUI.close_shop()

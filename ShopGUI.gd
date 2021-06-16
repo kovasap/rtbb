@@ -15,10 +15,32 @@ static func delete_children(node):
 		node.remove_child(c)
 		c.queue_free()
 
+func open_shop():
+	visible = true
+	refresh_shop()
+	get_parent().paused = true
+	get_parent().shop_open = true
+	get_parent().get_node("StartRoundButton").visible = true
+
+func close_shop():
+	visible = false
+	clear_shop()
+	get_parent().paused = false
+	get_parent().shop_open = false
+	get_parent().get_node("StartRoundButton").visible = false
+
+func clear_shop():
+	var chars_for_sale_node = $BackgroundPanel/VBoxContainer/CharsForSale
+	delete_children(chars_for_sale_node)
+	for c in chars_for_sale:
+		if c.in_shop:
+			c.visible = false
+	chars_for_sale = []
+
 func refresh_shop():
 	print('refreshing')
 	var chars_for_sale_node = $BackgroundPanel/VBoxContainer/CharsForSale
-	delete_children(chars_for_sale_node)
+	clear_shop()
 	var char_pool = get_parent().character_pool
 	char_pool.shuffle()
 	var cur_row_position = Vector2(0, 50)
@@ -33,6 +55,7 @@ func refresh_shop():
 		row.connect("gui_input", char_pool[i], "_on_Character_input_event_shop")
 		cost_label.connect("gui_input", char_pool[i], "_on_Character_input_event_shop")
 		char_pool[i].visible = true
+		char_pool[i].in_shop = true
 		# this doesn't work for some reason
 		# char_pool[i].position = row.rect_position + Vector2(100, 50)
 		char_pool[i].position = cur_row_position + Vector2(100, 50)

@@ -7,6 +7,8 @@ var color = Color(0, 1, 0, 1)
 var faction = 'friendly'
 var velocity = 50
 
+var start_position = Vector2(0, 0)
+
 var health = 5
 const max_health = 5
 var hearts = []
@@ -40,7 +42,7 @@ func get_closest_char(other_characters):
 func act(game):
 	if dead or dragging:
 		return
-	var closest_char = get_closest_char(game.characters)
+	var closest_char = get_closest_char(game.battlefield_characters)
 	if closest_char == null:
 		self.linear_velocity = Vector2(0, 0)
 		return
@@ -58,11 +60,13 @@ func act(game):
 			cooldown -= 1
 
 onready var projectile_scene = load("res://Projectile.tscn")
+var projectiles = []
 func shoot(direction):
 	var projectile = projectile_scene.instance()
 	add_child(projectile)
 	projectile.rotation = direction.angle() + PI/2
 	projectile.linear_velocity = 400 * direction
+	projectiles.append(projectile)
 
 
 func _ready():
@@ -73,6 +77,25 @@ func _ready():
 		heart.position = Vector2(10 * i - 30, -30)
 		hearts.append(heart)
 
+func kill():
+	$CollisionShape2D.disabled = true
+	self.linear_velocity = Vector2(0, 0)
+	$Sprite.modulate.a = 0.4
+	dead = true
+
+func reset():
+	$CollisionShape2D.disabled = false
+	self.linear_velocity = Vector2(0, 0)
+	$Sprite.modulate.a = 1.0
+	dead = false
+	position = start_position
+	visible = true
+	health = max_health
+	rotation_degrees = 0
+	for p in projectiles:
+		remove_child(p)
+	projectiles = []
+	update_health(0)
 
 func update_health(delta):
 	health += delta
@@ -82,15 +105,13 @@ func update_health(delta):
 		else:
 			hearts[i].visible = false
 	if health <= 0:
-		$CollisionShape2D.disabled = true
-		self.linear_velocity = Vector2(0, 0)
-		$Sprite.modulate.a = 0.4
-		dead = true
+		kill()
 
 func _process(delta):
 	if dragging:
-		var mousepos = get_viewport().get_mouse_position()
-		self.position = Vector2(mousepos.x, mousepos.y)
+		# Setting position does not work because the physics engine will recompute location as the original location every timestep.
+		global_transform.origin = get_viewport().get_mouse_position()
+		start_position = get_viewport().get_mouse_position()
 
 func _draw():
 	# We draw the circle at 0, 0 relative to THIS SCENE.
@@ -109,15 +130,15 @@ func _on_Character_body_entered(body):
 		body.set_owner(self)
 
 func _on_Character_input_event(_viewport, event, _shape_idx):
-	if event is InputEventMouseButton:
-		if event.button_index == BUTTON_LEFT and event.pressed:
+	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
+		if event.pressed:
 			dragging = true
-		elif event.button_index == BUTTON_LEFT and !event.pressed:
+		elif !event.pressed:
 			dragging = false
 
 func _on_Character_input_event_shop(event):
-	if event is InputEventMouseButton:
-		if event.button_index == BUTTON_LEFT and event.pressed:
+	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
+		if event.pressed:
 			if get_parent().gold > cost:
 				get_parent().buy_character(self)
 				_on_Character_input_event(null, event, null)
