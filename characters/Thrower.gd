@@ -32,4 +32,3 @@ func act(game):
       shoot(direction)
       time_until_next_attack = attack_cooldown
   time_until_next_attack -= 1
-

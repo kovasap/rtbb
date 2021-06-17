@@ -48,20 +48,24 @@ func act(game):
     self.linear_velocity = Vector2(0, 0)
     return
   var direction = self.position.direction_to(closest_char.position)
-  self.rotation = direction.angle()
+  # This CANNOT be used to rotate the body - will glitch out movement
+  # See
+  # https://godotengine.org/qa/107669/rigidbody2d-will-not-move-when-it-has-an-area2d-as-a-child
+  # self.rotation = direction.angle()
+  # Use of sin here gradually corrects angular_velocity to zero as the
+  # difference between the current rotation and the angle to the closest
+  # character goes to zero.
+  self.angular_velocity = 40 * sin((direction.angle() - self.rotation) / 10)
   var distance = self.position.distance_to(closest_char.position)
   if distance > adjacency_distance and distance > attack_range:
-    # apply_central_impulse(speed * direction)
-    # https://godotengine.org/qa/107669/rigidbody2d-will-not-move-when-it-has-an-area2d-as-a-child
     self.linear_velocity = speed * direction
-    # self.linear_velocity = speed * direction
   else:
     self.linear_velocity = Vector2(0, 0)
-  # if closest_char.get_node('Hitbox').overlaps_area($MeleeHitbox):
-  #   if time_until_next_attack == 0:
-  #     slash(closest_char)
-  #     time_until_next_attack = attack_cooldown
-  # time_until_next_attack -= 1
+  if closest_char.get_node('Hitbox').overlaps_area($MeleeHitbox):
+    if time_until_next_attack == 0:
+      slash(closest_char)
+      time_until_next_attack = attack_cooldown
+  time_until_next_attack -= 1
 
 # func _integrate_forces(state):
 #   state.set_linear_velocity(cur_velocity)

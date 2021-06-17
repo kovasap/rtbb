@@ -59,8 +59,14 @@ func buy_character(c):
   battlefield_characters.append(c)
   party_characters.append(c)
 
+func setup_debug_scenerio():
+  var friendly = make_character(Vector2(300, 300), 'friendly', 'Character')
+  var enemy = make_character(Vector2(700, 300), 'enemy', 'Character')
+  battlefield_characters = [friendly, enemy]
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
+  # setup_debug_scenerio()
   for _i in range(30):
     var pool_character = make_character(Vector2(0, 0), 'friendly', 'Thrower')
     pool_character.visible = false
