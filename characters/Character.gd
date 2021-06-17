@@ -1,4 +1,4 @@
-extends Node2D
+extends RigidBody2D
 
 class_name Character
 
@@ -10,6 +10,7 @@ var hearts = []
 var dead = false
 var dragging = false
 var time_until_next_attack = 0
+var cur_velocity = Vector2(0, 0)
 
 # Character stats
 var speed = 50
@@ -18,8 +19,9 @@ var max_health = 5
 var color = Color(0, 1, 0, 1)
 var faction = 'friendly'
 var projectile_speed = 400
-var fire_range = 150
+var attack_range = 10
 var attack_cooldown = 100
+var attack_damage = 2
 # If two characters are this far apart they are considered adjacent and will
 # not move towards each other anymore.
 var adjacency_distance = 50
@@ -36,35 +38,46 @@ func get_closest_char(other_characters):
       closest_char = oc
   return closest_char
 
-# Find the closest character to me and go one speed step towards it.
+# Find the closest character to me and go one speed step towards it.  Attack if
+# possible.
 func act(game):
   if dead or dragging:
     return
   var closest_char = get_closest_char(game.battlefield_characters)
   if closest_char == null:
-    self.linear_velocity = Vector2(0, 0)
+    cur_velocity = Vector2(0, 0)
     return
   var direction = self.position.direction_to(closest_char.position)
+  self.rotation = direction.angle()
   var distance = self.position.distance_to(closest_char.position)
-  if distance > adjacency_distance and distance > fire_range:
-    self.linear_velocity = speed * direction
+  if distance > adjacency_distance and distance > attack_range:
+    # apply_central_impulse(speed * direction)
+    cur_velocity = speed * direction
   else:
-    self.linear_velocity = Vector2(0, 0)
-  if distance < fire_range:
+    cur_velocity = Vector2(0, 0)
+  if closest_char.get_node('Hitbox').overlaps_area($MeleeHitbox):
     if time_until_next_attack == 0:
-      shoot(direction)
+      slash(closest_char)
       time_until_next_attack = attack_cooldown
-    else:
-      time_until_next_attack -= 1
+  time_until_next_attack -= 1
+
+func _integrate_forces(state):
+  state.set_linear_velocity(cur_velocity)
 
 onready var projectile_scene = load("res://Projectile.tscn")
 var projectiles = []
 func shoot(direction):
   var projectile = projectile_scene.instance()
+  projectile.damage = attack_damage
   add_child(projectile)
   projectile.rotation = direction.angle() + PI/2
   projectile.linear_velocity = projectile_speed * direction
   projectiles.append(projectile)
+
+
+func slash(target_character):
+  $SlashAnimation.play()
+  target_character.update_health(attack_damage)
 
 
 func _ready():
@@ -76,15 +89,15 @@ func _ready():
     heart.position = Vector2(10 * i - 30, -30)
     hearts.append(heart)
 
-func kill():
+func die():
   $CollisionShape2D.disabled = true
-  self.linear_velocity = Vector2(0, 0)
+  cur_velocity = Vector2(0, 0)
   $Sprite.modulate.a = 0.4
   dead = true
 
 func reset():
   $CollisionShape2D.disabled = false
-  self.linear_velocity = Vector2(0, 0)
+  cur_velocity = Vector2(0, 0)
   $Sprite.modulate.a = 1.0
   dead = false
   position = start_position
@@ -104,7 +117,7 @@ func update_health(delta):
     else:
       hearts[i].visible = false
   if health <= 0:
-    kill()
+    die()
 
 func _process(_delta):
   if dragging:
@@ -120,7 +133,7 @@ func _draw():
 const Projectile = preload("res://Projectile.gd")
 func _on_Character_body_entered(body):
   # TODO Figure out how to have projectiles stick into the character and stay
-  if body is Projectile:
+  if body is Projectile and body.get_parent() != self:
     update_health(-body.damage)
     body.collision_layer = 0
     add_child(body)
