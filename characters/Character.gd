@@ -45,24 +45,26 @@ func act(game):
     return
   var closest_char = get_closest_char(game.battlefield_characters)
   if closest_char == null:
-    cur_velocity = Vector2(0, 0)
+    self.linear_velocity = Vector2(0, 0)
     return
   var direction = self.position.direction_to(closest_char.position)
   self.rotation = direction.angle()
   var distance = self.position.distance_to(closest_char.position)
   if distance > adjacency_distance and distance > attack_range:
     # apply_central_impulse(speed * direction)
-    cur_velocity = speed * direction
+    # https://godotengine.org/qa/107669/rigidbody2d-will-not-move-when-it-has-an-area2d-as-a-child
+    self.linear_velocity = speed * direction
+    # self.linear_velocity = speed * direction
   else:
-    cur_velocity = Vector2(0, 0)
-  if closest_char.get_node('Hitbox').overlaps_area($MeleeHitbox):
-    if time_until_next_attack == 0:
-      slash(closest_char)
-      time_until_next_attack = attack_cooldown
-  time_until_next_attack -= 1
+    self.linear_velocity = Vector2(0, 0)
+  # if closest_char.get_node('Hitbox').overlaps_area($MeleeHitbox):
+  #   if time_until_next_attack == 0:
+  #     slash(closest_char)
+  #     time_until_next_attack = attack_cooldown
+  # time_until_next_attack -= 1
 
-func _integrate_forces(state):
-  state.set_linear_velocity(cur_velocity)
+# func _integrate_forces(state):
+#   state.set_linear_velocity(cur_velocity)
 
 onready var projectile_scene = load("res://Projectile.tscn")
 var projectiles = []
@@ -91,13 +93,13 @@ func _ready():
 
 func die():
   $CollisionShape2D.disabled = true
-  cur_velocity = Vector2(0, 0)
+  self.linear_velocity = Vector2(0, 0)
   $Sprite.modulate.a = 0.4
   dead = true
 
 func reset():
   $CollisionShape2D.disabled = false
-  cur_velocity = Vector2(0, 0)
+  self.linear_velocity = Vector2(0, 0)
   $Sprite.modulate.a = 1.0
   dead = false
   position = start_position
@@ -121,7 +123,8 @@ func update_health(delta):
 
 func _process(_delta):
   if dragging:
-    # Setting position does not work because the physics engine will recompute location as the original location every timestep.
+    # Setting position does not work because the physics engine will recompute
+    # location as the original location every timestep.
     global_transform.origin = get_viewport().get_mouse_position()
     start_position = get_viewport().get_mouse_position()
 
