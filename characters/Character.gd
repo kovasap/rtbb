@@ -11,6 +11,7 @@ var dead = false
 var dragging = false
 var time_until_next_attack = 0
 var cur_velocity = Vector2(0, 0)
+var cur_target
 
 # Character stats
 var speed = 50
@@ -24,7 +25,35 @@ var attack_cooldown = 100
 var attack_damage = 2
 # If two characters are this far apart they are considered adjacent and will
 # not move towards each other anymore.
-var adjacency_distance = 50
+var adjacency_distance = 60
+var faction_sprites = {
+  'enemy': preload('res://sprites/chess/black_pawn.png'),
+  'friendly': preload('res://sprites/chess/white_pawn.png'),
+}
+const faction_colors = {
+  'enemy': Color(1, 0, 0, 1),
+  'friendly': Color(0, 1, 0, 1),
+}
+
+func _ready():
+  health = max_health
+  for i in range(max_health):
+    var heart = Sprite.new()
+    heart.texture = load("res://sprites/16x16 RPG Item Pack/Item__29.png")
+    add_child(heart)
+    heart.position = Vector2(10 * i - 30, -30)
+    hearts.append(heart)
+
+func set_faction(new_faction):
+  faction = new_faction
+  color = faction_colors[faction]
+  $Sprite.set_texture(faction_sprites[faction])
+
+func set_start_position(new_start_position):
+  # Setting position does not work because the physics engine will recompute
+  # location as the original location every timestep.
+  global_transform.origin = new_start_position
+  start_position = new_start_position
 
 func get_closest_char(other_characters):
   var closest_dist = INF
@@ -55,45 +84,36 @@ func act(game):
   # Use of sin here gradually corrects angular_velocity to zero as the
   # difference between the current rotation and the angle to the closest
   # character goes to zero.
-  self.angular_velocity = 40 * sin((direction.angle() - self.rotation) / 10)
+  # self.angular_velocity = 40 * sin((direction.angle() - self.rotation) / 10)
+  $MeleeHitbox.rotation = direction.angle() - self.rotation
   var distance = self.position.distance_to(closest_char.position)
   if distance > adjacency_distance and distance > attack_range:
     self.linear_velocity = speed * direction
   else:
     self.linear_velocity = Vector2(0, 0)
-  if closest_char.get_node('Hitbox').overlaps_area($MeleeHitbox):
-    if time_until_next_attack == 0:
-      slash(closest_char)
+  if time_until_next_attack <= 0 and try_attack(closest_char):
       time_until_next_attack = attack_cooldown
   time_until_next_attack -= 1
 
 # func _integrate_forces(state):
 #   state.set_linear_velocity(cur_velocity)
 
-onready var projectile_scene = load("res://Projectile.tscn")
-var projectiles = []
-func shoot(direction):
-  var projectile = projectile_scene.instance()
-  projectile.damage = attack_damage
-  add_child(projectile)
-  projectile.rotation = direction.angle() + PI/2
-  projectile.linear_velocity = projectile_speed * direction
-  projectiles.append(projectile)
-
+# Returns if the attack happened or not
+func try_attack(target_character):
+  if target_character.get_node('Hitbox').overlaps_area($MeleeHitbox):
+    slash(target_character)
+    return true
+  return false
 
 func slash(target_character):
-  $SlashAnimation.play()
-  target_character.update_health(attack_damage)
+  $MeleeHitbox/SlashAnimation.frame = 0
+  $MeleeHitbox/SlashAnimation.play()
+  cur_target = target_character
 
-
-func _ready():
-  health = max_health
-  for i in range(max_health):
-    var heart = Sprite.new()
-    heart.texture = load("res://sprites/16x16 RPG Item Pack/Item__29.png")
-    add_child(heart)
-    heart.position = Vector2(10 * i - 30, -30)
-    hearts.append(heart)
+func _on_SlashAnimation_animation_finished():
+  $MeleeHitbox/SlashAnimation.stop()
+  $MeleeHitbox/SlashAnimation.frame = 4
+  cur_target.update_health(-attack_damage)
 
 func die():
   $CollisionShape2D.disabled = true
@@ -110,9 +130,6 @@ func reset():
   visible = true
   health = max_health
   rotation_degrees = 0
-  for p in projectiles:
-    remove_child(p)
-  projectiles = []
   update_health(0)
 
 func update_health(delta):
@@ -127,10 +144,7 @@ func update_health(delta):
 
 func _process(_delta):
   if dragging:
-    # Setting position does not work because the physics engine will recompute
-    # location as the original location every timestep.
-    global_transform.origin = get_viewport().get_mouse_position()
-    start_position = get_viewport().get_mouse_position()
+    set_start_position(get_viewport().get_mouse_position())
 
 func _draw():
   # We draw the circle at 0, 0 relative to THIS SCENE.

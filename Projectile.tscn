@@ -7,6 +7,7 @@
 extents = Vector2( 2.05396, 10.6095 )
 
 [node name="Projectile" type="RigidBody2D"]
+mass = 0.2
 gravity_scale = 0.0
 linear_damp = 0.416
 angular_damp = 5.749

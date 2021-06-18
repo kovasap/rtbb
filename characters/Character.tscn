@@ -1,26 +1,27 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://characters/Character.gd" type="Script" id=1]
-[ext_resource path="res://sprites/2D Pixel Dungeon Asset Pack/Character_animation/priests_idle/priest1/v2/priest1_v2_1.png" type="Texture" id=2]
+[ext_resource path="res://sprites/chess/pawn.png" type="Texture" id=2]
 [ext_resource path="res://sprites/slash/slash4.png" type="Texture" id=3]
 [ext_resource path="res://sprites/slash/slash2.png" type="Texture" id=4]
 [ext_resource path="res://sprites/slash/slash5.png" type="Texture" id=5]
 [ext_resource path="res://sprites/slash/slash3.png" type="Texture" id=6]
 [ext_resource path="res://sprites/slash/slash1.png" type="Texture" id=7]
+[ext_resource path="res://sprites/arrow.png" type="Texture" id=8]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 21.7312
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 19.6364, 18.4466 )
 
 [sub_resource type="SpriteFrames" id=2]
 animations = [ {
 "frames": [ ExtResource( 7 ), ExtResource( 4 ), ExtResource( 6 ), ExtResource( 3 ), ExtResource( 5 ) ],
 "loop": true,
 "name": "slash",
-"speed": 5.0
+"speed": 10.0
 } ]
-
-[sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 14.3776, 18.4466 )
 
 [sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 21.8256, 21.8667 )
@@ -36,15 +37,8 @@ script = ExtResource( 1 )
 shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
-scale = Vector2( 2, 2 )
+position = Vector2( 0.297153, -0.527214 )
 texture = ExtResource( 2 )
-
-[node name="SlashAnimation" type="AnimatedSprite" parent="."]
-position = Vector2( 11.5483, -4.68223 )
-scale = Vector2( 0.212968, 0.162902 )
-frames = SubResource( 2 )
-animation = "slash"
-frame = 4
 
 [node name="MeleeHitbox" type="Area2D" parent="."]
 gravity = 0.0
@@ -52,8 +46,22 @@ linear_damp = 0.0
 angular_damp = 0.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MeleeHitbox"]
-position = Vector2( 18.5406, 1.32434 )
+position = Vector2( 32.5138, 0.729735 )
 shape = SubResource( 3 )
+
+[node name="Direction" type="Sprite" parent="MeleeHitbox"]
+modulate = Color( 1, 1, 1, 0.290196 )
+position = Vector2( 32.7032, 2.22976 )
+rotation = 3.14159
+scale = Vector2( 0.433445, 0.458487 )
+texture = ExtResource( 8 )
+
+[node name="SlashAnimation" type="AnimatedSprite" parent="MeleeHitbox"]
+position = Vector2( 11.5483, -4.68223 )
+scale = Vector2( 0.212968, 0.162902 )
+frames = SubResource( 2 )
+animation = "slash"
+frame = 4
 
 [node name="Hitbox" type="Area2D" parent="."]
 position = Vector2( -2.97303, 41.6222 )
@@ -65,4 +73,6 @@ angular_damp = 0.0
 position = Vector2( 2.08111, -41.6222 )
 shape = SubResource( 4 )
 
+[connection signal="body_entered" from="." to="." method="_on_Character_body_entered"]
 [connection signal="input_event" from="." to="." method="_on_Character_input_event"]
+[connection signal="animation_finished" from="MeleeHitbox/SlashAnimation" to="." method="_on_SlashAnimation_animation_finished"]

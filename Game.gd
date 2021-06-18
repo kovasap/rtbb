@@ -4,10 +4,11 @@ const reroll_cost = 2
 var gold = 10
 var shop_open = false
 
-var cur_level = 0
+var cur_level = -1
 # Each level describes enemy positions for that level.
 # TODO give this better structure.
 const levels = [
+  [Vector2(700, 200)],
   [Vector2(700, 200)],
   [Vector2(700, 200), Vector2(700, 300), Vector2(700, 100)],
   [Vector2(700, 200), Vector2(700, 300), Vector2(700, 100),
@@ -17,6 +18,11 @@ const levels = [
 var character_pool = []
 
 var party_characters = []
+
+# Control for the window of time after a battle ends before the shop opens.
+const battle_ending_duration = 100  # frames
+var battle_ending_time_elapsed = 0  # frames
+var battle_ending = false
 
 var paused = true
 var battlefield_characters = []
@@ -28,13 +34,8 @@ onready var char_scenes = {
 func make_character(pos, faction, type):
   var character = char_scenes[type].instance()
   add_child(character)
-  character.position = pos
-  character.start_position = pos
-  character.faction = faction
-  if faction == 'enemy':
-    character.color = Color(1, 0, 0, 1)
-  elif faction == 'friendly':
-    character.color = Color(0, 1, 0, 1)
+  character.set_start_position(pos)
+  character.set_faction(faction)
   return character
 
 func load_next_level():
@@ -50,7 +51,6 @@ func load_next_level():
   for enemy_position in levels[cur_level]:
     var enemy = make_character(enemy_position, 'enemy', 'Character')
     battlefield_characters.append(enemy)
-    enemy.attack_cooldown = 500
 
 func buy_character(c):
   gold -= c.cost
@@ -82,23 +82,29 @@ func _process(_delta):
     for character in battlefield_characters:
       character.act(self)
 
-  var battle_won = true
-  var battle_lost = true
-
-  for c in battlefield_characters:
-    if c.faction == 'enemy' and not c.dead:
-      battle_won = false
-    if c.faction == 'friendly' and not c.dead:
-      battle_lost = false
-  if battle_won or battle_lost:
-    if battle_won:
-      $ResultAnnouncement.text = 'Battle %s Won!' % cur_level
-    if battle_lost:
-      $ResultAnnouncement.text = 'Battle %s Lost!' % cur_level
-    $ResultAnnouncement.visible = true
-    if not shop_open:
+  if battle_ending:
+    battle_ending_time_elapsed += 1
+    if battle_ending_time_elapsed > battle_ending_duration:
       $ShopGUI.open_shop()
       load_next_level()
+      battle_ending = false
+      Engine.time_scale = 1.0
+  else:
+    var battle_won = true
+    var battle_lost = true
+    for c in battlefield_characters:
+      if c.faction == 'enemy' and not c.dead:
+        battle_won = false
+      if c.faction == 'friendly' and not c.dead:
+        battle_lost = false
+    if battle_won or battle_lost:
+      Engine.time_scale = 0.1
+      if battle_won:
+        $ResultAnnouncement.text = 'Battle %s Won!' % cur_level
+      if battle_lost:
+        $ResultAnnouncement.text = 'Battle %s Lost!' % cur_level
+      $ResultAnnouncement.visible = true
+      battle_ending = true
 
 func _on_Button_pressed():
   $ShopGUI.close_shop()
