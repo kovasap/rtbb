@@ -15,6 +15,7 @@ var cur_target
 
 # Character stats
 var speed = 50
+var speed_modifier = 1.0
 var cost = 2
 var max_health = 5
 var color = Color(0, 1, 0, 1)
@@ -88,7 +89,7 @@ func act(game):
   $MeleeHitbox.rotation = direction.angle() - self.rotation
   var distance = self.position.distance_to(closest_char.position)
   if distance > adjacency_distance and distance > attack_range:
-    self.linear_velocity = speed * direction
+    self.linear_velocity = speed_modifier * speed * direction
   else:
     self.linear_velocity = Vector2(0, 0)
   if time_until_next_attack <= 0 and try_attack(closest_char):

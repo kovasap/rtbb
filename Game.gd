@@ -30,6 +30,7 @@ var battlefield_characters = []
 onready var char_scenes = {
   'Character': load("res://characters/Character.tscn"),
   'Thrower': load("res://characters/Thrower.tscn"),
+  'Mystic': load("res://characters/Mystic.tscn"),
 }
 func make_character(pos, faction, type):
   var character = char_scenes[type].instance()
@@ -37,6 +38,19 @@ func make_character(pos, faction, type):
   character.set_start_position(pos)
   character.set_faction(faction)
   return character
+
+const shop_pool = {
+  'Character': 5,
+  'Thrower': 5,
+  'Mystic': 10,
+}
+
+func build_shop_pool():
+  for char_type in shop_pool:
+    for _i in range(shop_pool[char_type]):
+      var pool_character = make_character(Vector2(0, 0), 'friendly', char_type)
+      pool_character.visible = false
+      character_pool.append(pool_character)
 
 func load_next_level():
   for c in battlefield_characters:
@@ -66,11 +80,8 @@ func setup_debug_scenerio():
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+  build_shop_pool()
   # setup_debug_scenerio()
-  for _i in range(30):
-    var pool_character = make_character(Vector2(0, 0), 'friendly', 'Thrower')
-    pool_character.visible = false
-    character_pool.append(pool_character)
   var friendly = make_character(Vector2(400, 180), 'friendly', 'Character')
   battlefield_characters.append(friendly)
   load_next_level()
