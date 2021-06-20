@@ -8,8 +8,8 @@ var cur_level = -1
 # Each level describes enemy positions for that level.
 # TODO give this better structure.
 const levels = [
-  [Vector2(700, 200)],
-  [Vector2(700, 200)],
+  # [Vector2(700, 200)],
+  [Vector2(700, 200), Vector2(700, 300)],
   [Vector2(700, 200), Vector2(700, 300), Vector2(700, 100)],
   [Vector2(700, 200), Vector2(700, 300), Vector2(700, 100),
    Vector2(850, 200), Vector2(850, 300), Vector2(850, 100)],
@@ -31,6 +31,7 @@ onready var char_scenes = {
   'Character': load("res://characters/Character.tscn"),
   'Thrower': load("res://characters/Thrower.tscn"),
   'Mystic': load("res://characters/Mystic.tscn"),
+  'Healer': load("res://characters/Healer.tscn"),
 }
 func make_character(pos, faction, type):
   var character = char_scenes[type].instance()
@@ -42,7 +43,8 @@ func make_character(pos, faction, type):
 const shop_pool = {
   'Character': 5,
   'Thrower': 5,
-  'Mystic': 10,
+  'Mystic': 5,
+  'Healer': 10,
 }
 
 func build_shop_pool():
