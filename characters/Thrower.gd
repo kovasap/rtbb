@@ -2,6 +2,9 @@ extends Character
 
 class_name Thrower
 
+# https://github.com/godotengine/godot/issues/21789
+func get_class(): return 'Thrower'
+
 func _ready():
   cost = 3
   max_health = 4

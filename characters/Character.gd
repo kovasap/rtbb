@@ -99,22 +99,9 @@ func act(game):
 # func _integrate_forces(state):
 #   state.set_linear_velocity(cur_velocity)
 
-# Returns if the attack happened or not
-func try_attack(target_character):
-  if target_character.get_node('Hitbox').overlaps_area($MeleeHitbox):
-    slash(target_character)
-    return true
-  return false
-
-func slash(target_character):
-  $MeleeHitbox/SlashAnimation.frame = 0
-  $MeleeHitbox/SlashAnimation.play()
-  cur_target = target_character
-
-func _on_SlashAnimation_animation_finished():
-  $MeleeHitbox/SlashAnimation.stop()
-  $MeleeHitbox/SlashAnimation.frame = 4
-  cur_target.update_health(-attack_damage)
+# Implemented by subclasses.
+func try_attack(_target_character):
+  pass
 
 func die():
   $CollisionShape2D.disabled = true

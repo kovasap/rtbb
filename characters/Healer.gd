@@ -2,6 +2,9 @@ extends Character
 
 class_name Healer
 
+# https://github.com/godotengine/godot/issues/21789
+func get_class(): return 'Healer'
+
 func _ready():
   cost = 3
   max_health = 6

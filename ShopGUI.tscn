@@ -10,14 +10,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BackgroundPanel" type="PanelContainer" parent="."]
+[node name="ShopBackground" type="PanelContainer" parent="."]
 margin_right = 294.0
 margin_bottom = 523.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="BackgroundPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ShopBackground"]
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 287.0
@@ -26,57 +26,57 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HBoxContainer" type="HBoxContainer" parent="BackgroundPanel/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ShopBackground/VBoxContainer"]
 margin_right = 280.0
 margin_bottom = 20.0
 
-[node name="Spacer1" type="Control" parent="BackgroundPanel/VBoxContainer/HBoxContainer"]
+[node name="Spacer1" type="Control" parent="ShopBackground/VBoxContainer/HBoxContainer"]
 margin_right = 34.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="GoldLabel" type="RichTextLabel" parent="BackgroundPanel/VBoxContainer/HBoxContainer"]
+[node name="GoldLabel" type="RichTextLabel" parent="ShopBackground/VBoxContainer/HBoxContainer"]
 margin_left = 38.0
 margin_right = 88.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 50, 0 )
 text = "Gold - "
 
-[node name="GoldAmountLabel" type="RichTextLabel" parent="BackgroundPanel/VBoxContainer/HBoxContainer"]
+[node name="GoldAmountLabel" type="RichTextLabel" parent="ShopBackground/VBoxContainer/HBoxContainer"]
 margin_left = 92.0
 margin_right = 122.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 30, 0 )
 
-[node name="Spacer2" type="Control" parent="BackgroundPanel/VBoxContainer/HBoxContainer"]
+[node name="Spacer2" type="Control" parent="ShopBackground/VBoxContainer/HBoxContainer"]
 margin_left = 126.0
 margin_right = 161.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="RerollButton" type="Button" parent="BackgroundPanel/VBoxContainer/HBoxContainer"]
+[node name="RerollButton" type="Button" parent="ShopBackground/VBoxContainer/HBoxContainer"]
 margin_left = 165.0
 margin_right = 241.0
 margin_bottom = 20.0
 text = "Reroll (2g)"
 
-[node name="Spacer3" type="Control" parent="BackgroundPanel/VBoxContainer/HBoxContainer"]
+[node name="Spacer3" type="Control" parent="ShopBackground/VBoxContainer/HBoxContainer"]
 margin_left = 245.0
 margin_right = 280.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Spacer4" type="Control" parent="BackgroundPanel/VBoxContainer"]
+[node name="Spacer4" type="Control" parent="ShopBackground/VBoxContainer"]
 margin_top = 24.0
 margin_right = 280.0
 margin_bottom = 505.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="CharsForSale" type="VBoxContainer" parent="BackgroundPanel/VBoxContainer"]
+[node name="CharsForSale" type="VBoxContainer" parent="ShopBackground/VBoxContainer"]
 margin_top = 509.0
 margin_right = 280.0
 margin_bottom = 509.0
@@ -84,4 +84,36 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[connection signal="pressed" from="BackgroundPanel/VBoxContainer/HBoxContainer/RerollButton" to="." method="_on_RerollButton_pressed"]
+[node name="TeamBackground" type="PanelContainer" parent="."]
+margin_left = 725.0
+margin_right = 1019.0
+margin_bottom = 523.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TeamBackground"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 287.0
+margin_bottom = 516.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Synergies" type="VBoxContainer" parent="TeamBackground/VBoxContainer"]
+margin_right = 280.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="RichTextLabel" parent="TeamBackground/VBoxContainer/Synergies"]
+margin_right = 280.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 40 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Synergies"
+
+[connection signal="pressed" from="ShopBackground/VBoxContainer/HBoxContainer/RerollButton" to="." method="_on_RerollButton_pressed"]

@@ -2,6 +2,9 @@ extends Character
 
 class_name Mystic
 
+# https://github.com/godotengine/godot/issues/21789
+func get_class(): return 'Mystic'
+
 func _ready():
   cost = 4
   max_health = 3

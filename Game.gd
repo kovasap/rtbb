@@ -27,8 +27,10 @@ var battle_ending = false
 var paused = true
 var battlefield_characters = []
 
+onready var Synergies = preload("res://characters/Synergies.gd").new()
+
 onready var char_scenes = {
-  'Character': load("res://characters/Character.tscn"),
+  'Soldier': load("res://characters/Soldier.tscn"),
   'Thrower': load("res://characters/Thrower.tscn"),
   'Mystic': load("res://characters/Mystic.tscn"),
   'Healer': load("res://characters/Healer.tscn"),
@@ -41,7 +43,7 @@ func make_character(pos, faction, type):
   return character
 
 const shop_pool = {
-  'Character': 5,
+  'Soldier': 5,
   'Thrower': 5,
   'Mystic': 5,
   'Healer': 10,
@@ -65,26 +67,28 @@ func load_next_level():
   if cur_level >= 2:
     cur_level = 2
   for enemy_position in levels[cur_level]:
-    var enemy = make_character(enemy_position, 'enemy', 'Character')
+    var enemy = make_character(enemy_position, 'enemy', 'Soldier')
     battlefield_characters.append(enemy)
 
 func buy_character(c):
   gold -= c.cost
-  $ShopGUI.update()
-  c.in_shop = false
   battlefield_characters.append(c)
   party_characters.append(c)
+  $ShopGUI.update()
+  c.in_shop = false
+  Synergies.apply_synergies(party_characters)
+  $ShopGUI.update_synergies(Synergies.get_synergy_levels(party_characters))
 
 func setup_debug_scenerio():
-  var friendly = make_character(Vector2(300, 300), 'friendly', 'Character')
-  var enemy = make_character(Vector2(700, 300), 'enemy', 'Character')
+  var friendly = make_character(Vector2(300, 300), 'friendly', 'Soldier')
+  var enemy = make_character(Vector2(700, 300), 'enemy', 'Soldier')
   battlefield_characters = [friendly, enemy]
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
   build_shop_pool()
   # setup_debug_scenerio()
-  var friendly = make_character(Vector2(400, 180), 'friendly', 'Character')
+  var friendly = make_character(Vector2(400, 180), 'friendly', 'Soldier')
   battlefield_characters.append(friendly)
   load_next_level()
   $ShopGUI.open_shop()

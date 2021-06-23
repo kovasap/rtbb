@@ -1,14 +1,40 @@
 extends Control
 
-func update():
-  $BackgroundPanel/VBoxContainer/HBoxContainer/GoldAmountLabel.text = str(get_parent().gold)
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-  update()
+onready var Synergies = preload("res://characters/Synergies.gd").new()
 
 const row_height = 150
 var chars_for_sale = []
+
+func update():
+  $ShopBackground/VBoxContainer/HBoxContainer/GoldAmountLabel.text = str(get_parent().gold)
+
+# Keyed by synergy name for easier updating.
+var synergies_panel_labels = {}
+
+func update_synergies(synergy_levels):
+  for synergy in synergy_levels:
+    var tiers = Synergies.synergies[synergy]['num_chars_required']
+    synergies_panel_labels[synergy].text = \
+        '%s %s (%s)' % [synergy, synergy_levels[synergy],
+                        PoolStringArray(tiers).join(' ')]
+
+func setup_synergies_panel():
+  for synergy in Synergies.synergies:
+    var row = HBoxContainer.new()
+    row.rect_min_size = Vector2(0, row_height)
+    var synergy_label = RichTextLabel.new()
+    row.add_child(synergy_label)
+    var tiers = Synergies.synergies[synergy]['num_chars_required']
+    synergy_label.size_flags_horizontal = SIZE_EXPAND_FILL
+    synergy_label.text = \
+        '%s 0 (%s)' % [synergy, PoolStringArray(tiers).join(' ')]
+    $TeamBackground/VBoxContainer/Synergies.add_child(row)
+    synergies_panel_labels[synergy] = synergy_label
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+  setup_synergies_panel()
+  update()
 
 static func delete_children(node):
   for c in node.get_children():
@@ -30,7 +56,7 @@ func close_shop():
   get_parent().get_node("StartRoundButton").visible = false
 
 func clear_shop():
-  var chars_for_sale_node = $BackgroundPanel/VBoxContainer/CharsForSale
+  var chars_for_sale_node = $ShopBackground/VBoxContainer/CharsForSale
   delete_children(chars_for_sale_node)
   for c in chars_for_sale:
     get_parent().character_pool.append(c)
@@ -40,7 +66,7 @@ func clear_shop():
 
 func refresh_shop():
   print('refreshing')
-  var chars_for_sale_node = $BackgroundPanel/VBoxContainer/CharsForSale
+  var chars_for_sale_node = $ShopBackground/VBoxContainer/CharsForSale
   clear_shop()
   var char_pool = get_parent().character_pool
   char_pool.shuffle()
