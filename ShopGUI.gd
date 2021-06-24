@@ -59,7 +59,7 @@ func clear_shop():
   var chars_for_sale_node = $ShopBackground/VBoxContainer/CharsForSale
   delete_children(chars_for_sale_node)
   for c in chars_for_sale:
-    get_parent().character_pool.append(c)
+    get_parent().characters['pool'].append(c)
     if c.in_shop:
       c.visible = false
   chars_for_sale = []
@@ -68,7 +68,7 @@ func refresh_shop():
   print('refreshing')
   var chars_for_sale_node = $ShopBackground/VBoxContainer/CharsForSale
   clear_shop()
-  var char_pool = get_parent().character_pool
+  var char_pool = get_parent().characters['pool']
   char_pool.shuffle()
   var cur_row_position = Vector2(0, 50)
   for i in 4:
@@ -97,3 +97,11 @@ func _on_RerollButton_pressed():
     refresh_shop()
   else:
     print('not enough money!')
+
+
+func _on_BenchBackground_mouse_entered():
+  get_parent().hovering_over_bench = true
+
+
+func _on_BenchBackground_mouse_exited():
+  get_parent().hovering_over_bench = false

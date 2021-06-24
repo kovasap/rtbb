@@ -32,5 +32,6 @@ func slash(target_character):
 func _on_SlashAnimation_animation_finished():
   $MeleeHitbox/SlashAnimation.stop()
   $MeleeHitbox/SlashAnimation.frame = 4
-  cur_target.update_health(-attack_damage)
+  if cur_target != null:
+    cur_target.update_health(-attack_damage)
 

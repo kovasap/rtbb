@@ -2,17 +2,6 @@ extends RigidBody2D
 
 class_name Character
 
-# Internal logic vars common to all characters.
-var in_shop = false
-var start_position = Vector2(0, 0)
-var health
-var hearts = []
-var dead = false
-var dragging = false
-var time_until_next_attack = 0
-var cur_velocity = Vector2(0, 0)
-var cur_target
-
 # Character stats
 var speed = 50
 var speed_modifier = 1.0
@@ -36,6 +25,17 @@ const faction_colors = {
   'friendly': Color(0, 1, 0, 1),
 }
 
+# Internal logic vars common to all characters.
+var in_shop = false
+var start_position = Vector2(0, 0)
+var health
+var hearts = []
+var dead = false
+var dragging = false
+var time_until_next_attack = 0
+var cur_velocity = Vector2(0, 0)
+var cur_target
+
 func _ready():
   health = max_health
   for i in range(max_health):
@@ -44,6 +44,7 @@ func _ready():
     add_child(heart)
     heart.position = Vector2(10 * i - 30, -30)
     hearts.append(heart)
+  time_until_next_attack = attack_cooldown
 
 func set_faction(new_faction):
   faction = new_faction
@@ -70,10 +71,10 @@ func get_closest_char(other_characters):
 
 # Find the closest character to me and go one speed step towards it.  Attack if
 # possible.
-func act(game):
+func act():
   if dead or dragging:
     return
-  var closest_char = get_closest_char(game.battlefield_characters)
+  var closest_char = get_closest_char(get_parent().get_battlefield_characters())
   if closest_char == null:
     self.linear_velocity = Vector2(0, 0)
     return
@@ -118,6 +119,7 @@ func reset():
   visible = true
   health = max_health
   rotation_degrees = 0
+  time_until_next_attack = attack_cooldown
   update_health(0)
 
 func update_health(delta):
@@ -151,11 +153,14 @@ func _on_Character_body_entered(body):
     body.set_owner(self)
 
 func _on_Character_input_event(_viewport, event, _shape_idx):
-  if event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
-    if event.pressed:
-      dragging = true
-    elif !event.pressed:
-      dragging = false
+  if event is InputEventMouseButton:
+    if event.button_index == BUTTON_LEFT:
+      if event.pressed:
+        dragging = true
+      elif !event.pressed:
+        dragging = false
+        if get_parent().hovering_over_bench:
+          get_parent().move_character(self, 'bench')
 
 func _on_Character_input_event_shop(event):
   if event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
