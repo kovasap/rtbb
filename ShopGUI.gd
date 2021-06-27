@@ -42,14 +42,14 @@ static func delete_children(node):
     c.queue_free()
 
 func open_shop():
-  visible = true
+  $ShopBackground.visible = true
   refresh_shop()
   get_parent().paused = true
   get_parent().shop_open = true
   get_parent().get_node("StartRoundButton").visible = true
 
 func close_shop():
-  visible = false
+  $ShopBackground.visible = false
   clear_shop()
   get_parent().paused = false
   get_parent().shop_open = false

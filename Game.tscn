@@ -18,7 +18,6 @@ __meta__ = {
 }
 
 [node name="ShopGUI" parent="." instance=ExtResource( 1 )]
-visible = false
 
 [node name="StartRoundButton" type="Button" parent="."]
 margin_left = 445.721
