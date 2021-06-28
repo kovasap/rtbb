@@ -52,6 +52,7 @@ onready var char_scenes = {
   'Thrower': load("res://characters/Thrower.tscn"),
   'Mystic': load("res://characters/Mystic.tscn"),
   'Healer': load("res://characters/Healer.tscn"),
+  'Assassin': load("res://characters/Assassin.tscn"),
 }
 func make_character(pos, faction, type):
   var character = char_scenes[type].instance()
@@ -61,10 +62,11 @@ func make_character(pos, faction, type):
   return character
 
 const shop_pool = {
-  'Soldier': 5,
-  'Thrower': 5,
-  'Mystic': 5,
-  'Healer': 10,
+  'Soldier': 1,
+  'Thrower': 1,
+  'Mystic': 1,
+  'Healer': 1,
+  'Assassin': 10,
 }
 
 func build_shop_pool():

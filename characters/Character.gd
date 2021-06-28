@@ -69,6 +69,18 @@ func get_closest_char(other_characters):
       closest_char = oc
   return closest_char
 
+func get_furthest_char(other_characters):
+  var furthest_dist = 0
+  var furthest_char = null
+  for oc in other_characters:
+    if oc == self or oc.dead or oc.faction == faction:
+      continue
+    var dist = self.position.distance_to(oc.position)
+    if dist > furthest_dist:
+      furthest_dist = dist
+      furthest_char = oc
+  return furthest_char
+
 # Find the closest character to me and go one speed step towards it.  Attack if
 # possible.
 func act():
