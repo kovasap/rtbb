@@ -12,7 +12,7 @@ func _ready():
   cost = 2
   max_health = 2
   attack_range = 10
-  attack_cooldown = 25
+  attack_cooldown = 40
   attack_damage = 4
   faction_sprites = {
     'enemy': preload('res://sprites/chess/black_queen.png'),
@@ -61,6 +61,8 @@ func slash(target_character):
   $MeleeHitbox/SlashAnimation.play()
   cur_target = target_character
 
+# If the animation is triggered again before the first animation is finished,
+# this signal will not be emitted, and this function will not be called!
 func _on_SlashAnimation_animation_finished():
   $MeleeHitbox/SlashAnimation.stop()
   $MeleeHitbox/SlashAnimation.frame = 4

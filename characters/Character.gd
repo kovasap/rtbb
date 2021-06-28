@@ -15,7 +15,7 @@ var attack_cooldown = 100
 var attack_damage = 2
 # If two characters are this far apart they are considered adjacent and will
 # not move towards each other anymore.
-var adjacency_distance = 75
+var adjacency_distance = 65
 var faction_sprites = {
   'enemy': preload('res://sprites/chess/black_pawn.png'),
   'friendly': preload('res://sprites/chess/white_pawn.png'),

@@ -97,7 +97,7 @@ func buy_character(c):
   $ShopGUI.update_synergies(Synergies.get_synergy_levels(characters['party']))
 
 func setup_debug_scenerio():
-  var friendly = make_character(Vector2(300, 300), 'friendly', 'Soldier')
+  var friendly = make_character(Vector2(300, 300), 'friendly', 'Assassin')
   var enemy = make_character(Vector2(700, 300), 'enemy', 'Soldier')
   characters['party'] = [friendly]
   characters['enemy'] = [enemy]
@@ -105,10 +105,10 @@ func setup_debug_scenerio():
 # Called when the node enters the scene tree for the first time.
 func _ready():
   build_shop_pool()
-  # setup_debug_scenerio()
-  var friendly = make_character(Vector2(400, 180), 'friendly', 'Soldier')
-  characters['party'].append(friendly)
-  load_next_level()
+  setup_debug_scenerio()
+  # var friendly = make_character(Vector2(400, 180), 'friendly', 'Soldier')
+  # characters['party'].append(friendly)
+  # load_next_level()
   $ShopGUI.open_shop()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
