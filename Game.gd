@@ -41,6 +41,12 @@ func move_character(character, new_location):
   else:
     characters[new_location].append(character)
 
+func move_all_characters(source, dest):
+  # Done so we don't iterate over an array we are deleting elements from.
+  var source_array = characters[source].duplicate()
+  for c in source_array:
+    move_character(c, dest)
+
 
 # Control for the window of time after a battle ends before the shop opens.
 const battle_ending_duration = 100  # frames
@@ -81,10 +87,7 @@ func build_shop_pool():
       characters['pool'].append(pool_character)
 
 func load_next_level():
-  # Done so we don't iterate over an array we are deleting elements from.
-  var enemies = characters['enemy'].duplicate()
-  for e in enemies:
-    move_character(e, null)
+  move_all_characters('enemy', null)
   for c in characters['party']:
     c.reset()
   cur_level += 1

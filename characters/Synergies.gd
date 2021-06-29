@@ -8,7 +8,7 @@ const synergies = {
 }
 
 
-# Doubles attack speed for all mercenaries.
+# Halved ability cooldowns for all mercenaries.
 static func apply_mercenary_synergy(party_characters, level):
   if level == 0:
     return
@@ -16,9 +16,11 @@ static func apply_mercenary_synergy(party_characters, level):
     if c.get_class() in synergies['mercenary']['characters']:
       if level == 1:
         print('Applying level 1 merc synergy to %s' % c.get_class())
-        c.attack_cooldown = 0.5 * c.attack_cooldown
+        for a in c.abilities:
+          a.cooldown = 0.5 * a.cooldown
       elif level == 2:
-        c.attack_cooldown = 0.25 * c.attack_cooldown
+        for a in c.abilities:
+          a.cooldown = 0.5 * a.cooldown
 
 
 static func get_synergy_levels(party_characters):

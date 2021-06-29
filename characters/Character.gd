@@ -10,9 +10,6 @@ var max_health = 5
 var color = Color(0, 1, 0, 1)
 var faction = 'friendly'
 var projectile_speed = 400
-var attack_range = 10
-var attack_cooldown = 100
-var attack_damage = 2
 # If two characters are this far apart they are considered adjacent and will
 # not move towards each other anymore.
 var adjacency_distance = 65
@@ -24,6 +21,7 @@ const faction_colors = {
   'enemy': Color(1, 0, 0, 1),
   'friendly': Color(0, 1, 0, 1),
 }
+var abilities = []
 
 # Internal logic vars common to all characters.
 var in_shop = false
@@ -33,9 +31,7 @@ var hearts = []
 var dead = false
 var dragging = false
 var merging_with = null
-var time_until_next_attack = 0
 var cur_velocity = Vector2(0, 0)
-var cur_target
 
 func hide_and_disable():
   visible = false
@@ -53,7 +49,8 @@ func _ready():
     add_child(heart)
     heart.position = Vector2(10 * i - 30, -30)
     hearts.append(heart)
-  time_until_next_attack = attack_cooldown
+  for a in abilities:
+    add_child(a)
 
 func set_faction(new_faction):
   faction = new_faction
@@ -108,22 +105,16 @@ func act():
   # difference between the current rotation and the angle to the closest
   # character goes to zero.
   # self.angular_velocity = 40 * sin((direction.angle() - self.rotation) / 10)
-  $MeleeHitbox.rotation = direction.angle() - self.rotation
   var distance = self.position.distance_to(closest_char.position)
-  if distance > adjacency_distance and distance > attack_range:
+  if distance > adjacency_distance:
     self.linear_velocity = speed_modifier * speed * direction
   else:
     self.linear_velocity = Vector2(0, 0)
-  if time_until_next_attack <= 0 and try_attack(closest_char):
-      time_until_next_attack = attack_cooldown
-  time_until_next_attack -= 1
+  for ability in abilities:
+    ability.try_to_use(self, get_parent().get_battlefield_characters())
 
 # func _integrate_forces(state):
 #   state.set_linear_velocity(cur_velocity)
-
-# Implemented by subclasses.
-func try_attack(_target_character):
-  pass
 
 func die():
   $CollisionShape2D.disabled = true
@@ -141,8 +132,9 @@ func reset():
   visible = true
   health = max_health
   rotation_degrees = 0
-  time_until_next_attack = attack_cooldown
   update_health(0)
+  for a in abilities:
+    a.reset()
 
 func update_health(delta):
   health += delta
@@ -176,36 +168,42 @@ func _on_Character_body_entered(body):
     body.stuck = true
     body.set_owner(self)
   elif body.get('is_character'):
-    merging_with = body
-    print('merging %s with %s' % [body.get_class(), self.get_class()])
+    if body.dragging:
+      merging_with = body
+    elif dragging:
+      body.merging_with = self
+    else:
+      pass  # No merging
 
 func _on_Character_body_exited(body):
   if body.get('is_character'):
     merging_with = null
 
-func upgrade(other_character):
-  print('upgrading %s' % get_class())
+# Make modifications to base character based on what this character is.
+func upgrade(_base_character):
+  pass
 
 func drop():
   get_parent().dragging_character = false
   dragging = false
   if merging_with:
-    upgrade(merging_with)
+    merging_with.upgrade(self)
+    print('upgrading %s with %s' % [get_class(), merging_with.get_class()])
+    merging_with.hide_and_disable()
+    get_parent().move_character(merging_with, null)
 
 func _on_Character_input_event(_viewport, event, _shape_idx):
-  print('yep')
   if event is InputEventMouseButton:
     if event.button_index == BUTTON_LEFT:
       if faction == 'enemy':
         print('cannot interact with enemy units!')
         return
       if dragging:
-        if get_parent().hovering_over_bench:
-          get_parent().move_character(self, 'bench')
-          drop()
-        elif get_parent().hovering_over_ui:
+        if get_parent().hovering_over_ui:
           print('cannot drop character onto ui element!')
         else:
+          if get_parent().hovering_over_bench:
+            get_parent().move_character(self, 'bench')
           drop()
       elif event.pressed:
         get_parent().dragging_character = true

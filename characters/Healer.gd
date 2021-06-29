@@ -5,10 +5,10 @@ class_name Healer
 # https://github.com/godotengine/godot/issues/21789
 func get_class(): return 'Healer'
 
+var Slash = load("res://characters/abilities/Slash.tscn")
 func _ready():
   cost = 3
   max_health = 6
-  attack_damage = 1
   faction_sprites = {
     'enemy': preload('res://sprites/chess/black_king.png'),
     'friendly': preload('res://sprites/chess/white_king.png'),
@@ -17,6 +17,7 @@ func _ready():
   $HealArea.health_delta_over_time = 1
   $HealArea.speed_modifier = 0.9
   $HealArea/CollisionShape2D.shape.radius = 100
+  abilities.append(Slash.instance())
   ._ready()
 
 

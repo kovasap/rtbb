@@ -3,7 +3,6 @@ extends Control
 onready var Synergies = preload("res://characters/Synergies.gd").new()
 
 const row_height = 150
-var chars_for_sale = []
 onready var game = get_parent()
 
 func update():
@@ -65,29 +64,26 @@ func close_shop():
   game.get_node("StartRoundButton").visible = false
 
 func clear_shop():
-  var chars_for_sale_node = $ShopBackground/VBoxContainer/CharsForSale
-  delete_children(chars_for_sale_node)
-  for c in chars_for_sale:
-    game.characters['pool'].append(c)
-    if c.in_shop:
-      c.visible = false
-  chars_for_sale = []
+  delete_children($ShopBackground/VBoxContainer/CharsForSale)
+  game.move_all_characters('shop', 'pool')
+  for c in game.characters['pool']:
+    c.in_shop = false
+    c.visible = false
 
 func refresh_shop():
-  var chars_for_sale_node = $ShopBackground/VBoxContainer/CharsForSale
   clear_shop()
   var char_pool = game.characters['pool']
   char_pool.shuffle()
   var cur_row_position = Vector2(0, 50)
   for i in 4:
-    var cur_char = char_pool.pop_back()
+    var cur_char = char_pool[i]
     var row = VBoxContainer.new()
     var cost_label = RichTextLabel.new()
     cost_label.text = 'Cost: %sg' % cur_char.cost
     cost_label.rect_min_size = Vector2(50, row_height)
     row.add_child(cost_label)
     row.rect_min_size = Vector2(0, row_height)
-    chars_for_sale_node.add_child(row)
+    $ShopBackground/VBoxContainer/CharsForSale.add_child(row)
     row.connect("gui_input", cur_char, "_on_Character_input_event_shop")
     cost_label.connect("gui_input", cur_char, "_on_Character_input_event_shop")
     cur_char.show_and_enable()
@@ -96,7 +92,7 @@ func refresh_shop():
     # cur_char.position = row.rect_position + Vector2(100, 50)
     cur_char.position = cur_row_position + Vector2(100, 50)
     cur_row_position += Vector2(0, row_height)
-    chars_for_sale.append(cur_char)
+    game.move_character(cur_char, 'shop')
 
 func _on_RerollButton_pressed():
   if game.gold >= game.reroll_cost:
