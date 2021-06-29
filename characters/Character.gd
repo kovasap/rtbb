@@ -41,14 +41,24 @@ func show_and_enable():
   visible = true
   $CollisionShape2D.disabled = false
 
-func _ready():
+# TODO have health be represented by cracks on the pieces (more cracks -> less
+# remaining health) instead of by these "hearts".
+func update_max_health(new_max):
+  max_health = new_max
   health = max_health
+  for h in hearts:
+    remove_child(h)
+    h.queue_free()
+  hearts = []
   for i in range(max_health):
     var heart = Sprite.new()
     heart.texture = load("res://sprites/16x16 RPG Item Pack/Item__29.png")
     add_child(heart)
     heart.position = Vector2(10 * i - 30, -30)
     hearts.append(heart)
+
+func _ready():
+  update_max_health(max_health)
   for a in abilities:
     add_child(a)
 
@@ -63,11 +73,13 @@ func set_start_position(new_start_position):
   global_transform.origin = new_start_position
   start_position = new_start_position
 
-func get_closest_char(other_characters):
+func get_closest_char(other_characters, of_different_faction = true):
   var closest_dist = INF
   var closest_char = null
   for oc in other_characters:
-    if oc == self or oc.dead or oc.faction == faction:
+    if oc == self or oc.dead:
+      continue
+    if of_different_faction and oc.faction == faction:
       continue
     var dist = self.position.distance_to(oc.position)
     if dist < closest_dist:
@@ -92,11 +104,11 @@ func get_furthest_char(other_characters):
 func act():
   if dead or get_parent().dragging_character:
     return
-  var closest_char = get_closest_char(get_parent().get_battlefield_characters())
-  if closest_char == null:
+  var closest_opponent = get_closest_char(get_parent().get_battlefield_characters())
+  if closest_opponent == null:
     self.linear_velocity = Vector2(0, 0)
     return
-  var direction = self.position.direction_to(closest_char.position)
+  var direction = self.position.direction_to(closest_opponent.position)
   # This CANNOT be used to rotate the body - will glitch out movement
   # See
   # https://godotengine.org/qa/107669/rigidbody2d-will-not-move-when-it-has-an-area2d-as-a-child
@@ -105,8 +117,14 @@ func act():
   # difference between the current rotation and the angle to the closest
   # character goes to zero.
   # self.angular_velocity = 40 * sin((direction.angle() - self.rotation) / 10)
-  var distance = self.position.distance_to(closest_char.position)
-  if distance > adjacency_distance:
+  var closest_char = get_closest_char(get_parent().get_battlefield_characters(), false)
+  var closest_char_distance = self.position.distance_to(closest_char.position)
+  var closest_char_direction = self.position.direction_to(closest_char.position)
+  # If there is a character that is adjacency_distance away from me and in the
+  # direction I want to go, then I wait for it to move.
+  if (closest_char_distance > adjacency_distance
+      or (closest_char != closest_opponent
+          and abs(closest_char_direction.angle() - direction.angle()) > PI/2)):
     self.linear_velocity = speed_modifier * speed * direction
   else:
     self.linear_velocity = Vector2(0, 0)
