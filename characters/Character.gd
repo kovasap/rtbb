@@ -32,9 +32,18 @@ var health
 var hearts = []
 var dead = false
 var dragging = false
+var merging_with = null
 var time_until_next_attack = 0
 var cur_velocity = Vector2(0, 0)
 var cur_target
+
+func hide_and_disable():
+  visible = false
+  $CollisionShape2D.disabled = true
+
+func show_and_enable():
+  visible = true
+  $CollisionShape2D.disabled = false
 
 func _ready():
   health = max_health
@@ -84,7 +93,7 @@ func get_furthest_char(other_characters):
 # Find the closest character to me and go one speed step towards it.  Attack if
 # possible.
 func act():
-  if dead or dragging:
+  if dead or get_parent().dragging_character:
     return
   var closest_char = get_closest_char(get_parent().get_battlefield_characters())
   if closest_char == null:
@@ -118,6 +127,7 @@ func try_attack(_target_character):
 
 func die():
   $CollisionShape2D.disabled = true
+  $Hitbox/CollisionShape2D.disabled = true
   self.linear_velocity = Vector2(0, 0)
   $Sprite.modulate.a = 0.4
   dead = true
@@ -153,6 +163,8 @@ func _draw():
   # draw_circle(Vector2(0,0), 20, color)
   pass
 
+# https://github.com/godotengine/godot/issues/21461
+const is_character = true
 const Projectile = preload("res://Projectile.gd")
 func _on_Character_body_entered(body):
   # TODO Figure out how to have projectiles stick into the character and stay
@@ -163,22 +175,50 @@ func _on_Character_body_entered(body):
     body.get_node("CollisionShape2D").disabled = true
     body.stuck = true
     body.set_owner(self)
+  elif body.get('is_character'):
+    merging_with = body
+    print('merging %s with %s' % [body.get_class(), self.get_class()])
+
+func _on_Character_body_exited(body):
+  if body.get('is_character'):
+    merging_with = null
+
+func upgrade(other_character):
+  print('upgrading %s' % get_class())
+
+func drop():
+  get_parent().dragging_character = false
+  dragging = false
+  if merging_with:
+    upgrade(merging_with)
 
 func _on_Character_input_event(_viewport, event, _shape_idx):
+  print('yep')
   if event is InputEventMouseButton:
     if event.button_index == BUTTON_LEFT:
-      if event.pressed:
-        dragging = true
-      elif !event.pressed:
-        dragging = false
+      if faction == 'enemy':
+        print('cannot interact with enemy units!')
+        return
+      if dragging:
         if get_parent().hovering_over_bench:
           get_parent().move_character(self, 'bench')
+          drop()
+        elif get_parent().hovering_over_ui:
+          print('cannot drop character onto ui element!')
+        else:
+          drop()
+      elif event.pressed:
+        get_parent().dragging_character = true
+        dragging = true
 
 func _on_Character_input_event_shop(event):
   if event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
     if event.pressed:
-      if get_parent().gold >= cost:
-        get_parent().buy_character(self)
-        _on_Character_input_event(null, event, null)
+      if get_parent().dragging_character:
+        print('cannot buy when moving a character!')
       else:
-        print('not enough money!')
+        if get_parent().gold >= cost:
+          get_parent().buy_character(self)
+          _on_Character_input_event(null, event, null)
+        else:
+          print('not enough money!')

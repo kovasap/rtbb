@@ -20,10 +20,10 @@ __meta__ = {
 [node name="ShopGUI" parent="." instance=ExtResource( 1 )]
 
 [node name="StartRoundButton" type="Button" parent="."]
-margin_left = 445.721
-margin_top = 551.53
-margin_right = 636.721
-margin_bottom = 588.53
+margin_left = 540.108
+margin_top = 666.683
+margin_right = 731.108
+margin_bottom = 703.683
 text = "Start Round"
 __meta__ = {
 "_edit_use_anchors_": false

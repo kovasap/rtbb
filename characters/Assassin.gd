@@ -23,7 +23,7 @@ func _ready():
 
 # Teleport to the furthest character.  Attack if possible.
 func act():
-  if dead or dragging:
+  if dead or get_parent().dragging_character:
     return
   var closest_char = get_closest_char(get_parent().get_battlefield_characters())
   var furthest_char = get_furthest_char(get_parent().get_battlefield_characters())

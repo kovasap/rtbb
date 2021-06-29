@@ -12,7 +12,7 @@ __meta__ = {
 
 [node name="ShopBackground" type="PanelContainer" parent="."]
 margin_right = 228.0
-margin_bottom = 523.0
+margin_bottom = 720.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -21,7 +21,7 @@ __meta__ = {
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 221.0
-margin_bottom = 516.0
+margin_bottom = 713.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -72,22 +72,22 @@ size_flags_vertical = 3
 [node name="Spacer4" type="Control" parent="ShopBackground/VBoxContainer"]
 margin_top = 24.0
 margin_right = 214.0
-margin_bottom = 505.0
+margin_bottom = 702.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="CharsForSale" type="VBoxContainer" parent="ShopBackground/VBoxContainer"]
-margin_top = 509.0
+margin_top = 706.0
 margin_right = 214.0
-margin_bottom = 509.0
+margin_bottom = 706.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="TeamBackground" type="PanelContainer" parent="."]
-margin_left = 811.0
-margin_right = 1019.0
-margin_bottom = 523.0
+margin_left = 1067.0
+margin_right = 1275.0
+margin_bottom = 720.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -96,31 +96,37 @@ __meta__ = {
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 201.0
-margin_bottom = 516.0
+margin_bottom = 713.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SynergiesTitle" type="RichTextLabel" parent="TeamBackground/VBoxContainer"]
+[node name="PartySizeDescription" type="RichTextLabel" parent="TeamBackground/VBoxContainer"]
 margin_right = 194.0
-margin_bottom = 123.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="SynergiesTitle" type="RichTextLabel" parent="TeamBackground/VBoxContainer"]
+margin_top = 54.0
+margin_right = 194.0
+margin_bottom = 249.0
 rect_min_size = Vector2( 0, 40 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Synergies"
 
 [node name="Synergies" type="VBoxContainer" parent="TeamBackground/VBoxContainer"]
-margin_top = 127.0
+margin_top = 253.0
 margin_right = 194.0
-margin_bottom = 127.0
+margin_bottom = 253.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="BenchTitle" type="RichTextLabel" parent="TeamBackground/VBoxContainer"]
-margin_top = 131.0
+margin_top = 257.0
 margin_right = 194.0
-margin_bottom = 255.0
+margin_bottom = 452.0
 rect_min_size = Vector2( 0, 40 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -130,11 +136,15 @@ __meta__ = {
 }
 
 [node name="BenchBackground" type="PanelContainer" parent="TeamBackground/VBoxContainer"]
-margin_top = 259.0
+margin_top = 456.0
 margin_right = 194.0
-margin_bottom = 509.0
+margin_bottom = 706.0
 rect_min_size = Vector2( 0, 250 )
 
+[connection signal="mouse_entered" from="ShopBackground" to="." method="_on_ShopBackground_mouse_entered"]
+[connection signal="mouse_exited" from="ShopBackground" to="." method="_on_ShopBackground_mouse_exited"]
 [connection signal="pressed" from="ShopBackground/VBoxContainer/HBoxContainer/RerollButton" to="." method="_on_RerollButton_pressed"]
+[connection signal="mouse_entered" from="TeamBackground" to="." method="_on_TeamBackground_mouse_entered"]
+[connection signal="mouse_exited" from="TeamBackground" to="." method="_on_TeamBackground_mouse_exited"]
 [connection signal="mouse_entered" from="TeamBackground/VBoxContainer/BenchBackground" to="." method="_on_BenchBackground_mouse_entered"]
 [connection signal="mouse_exited" from="TeamBackground/VBoxContainer/BenchBackground" to="." method="_on_BenchBackground_mouse_exited"]

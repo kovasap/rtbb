@@ -4,9 +4,11 @@ onready var Synergies = preload("res://characters/Synergies.gd").new()
 
 const row_height = 150
 var chars_for_sale = []
+onready var game = get_parent()
 
 func update():
-  $ShopBackground/VBoxContainer/HBoxContainer/GoldAmountLabel.text = str(get_parent().gold)
+  $ShopBackground/VBoxContainer/HBoxContainer/GoldAmountLabel.text = \
+      str(game.gold)
 
 # Keyed by synergy name for easier updating.
 var synergies_panel_labels = {}
@@ -31,10 +33,17 @@ func setup_synergies_panel():
     $TeamBackground/VBoxContainer/Synergies.add_child(row)
     synergies_panel_labels[synergy] = synergy_label
 
+func update_party_size_description():
+  $TeamBackground/VBoxContainer/PartySizeDescription.text = \
+      'Party Size: %s/%s' % [game.characters['party'].size(), game.max_party_size]
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
   setup_synergies_panel()
   update()
+
+func _process(_delta):
+  update_party_size_description()
 
 static func delete_children(node):
   for c in node.get_children():
@@ -44,31 +53,30 @@ static func delete_children(node):
 func open_shop():
   $ShopBackground.visible = true
   refresh_shop()
-  get_parent().paused = true
-  get_parent().shop_open = true
-  get_parent().get_node("StartRoundButton").visible = true
+  game.paused = true
+  game.shop_open = true
+  game.get_node("StartRoundButton").visible = true
 
 func close_shop():
   $ShopBackground.visible = false
   clear_shop()
-  get_parent().paused = false
-  get_parent().shop_open = false
-  get_parent().get_node("StartRoundButton").visible = false
+  game.paused = false
+  game.shop_open = false
+  game.get_node("StartRoundButton").visible = false
 
 func clear_shop():
   var chars_for_sale_node = $ShopBackground/VBoxContainer/CharsForSale
   delete_children(chars_for_sale_node)
   for c in chars_for_sale:
-    get_parent().characters['pool'].append(c)
+    game.characters['pool'].append(c)
     if c.in_shop:
       c.visible = false
   chars_for_sale = []
 
 func refresh_shop():
-  print('refreshing')
   var chars_for_sale_node = $ShopBackground/VBoxContainer/CharsForSale
   clear_shop()
-  var char_pool = get_parent().characters['pool']
+  var char_pool = game.characters['pool']
   char_pool.shuffle()
   var cur_row_position = Vector2(0, 50)
   for i in 4:
@@ -82,7 +90,7 @@ func refresh_shop():
     chars_for_sale_node.add_child(row)
     row.connect("gui_input", cur_char, "_on_Character_input_event_shop")
     cost_label.connect("gui_input", cur_char, "_on_Character_input_event_shop")
-    cur_char.visible = true
+    cur_char.show_and_enable()
     cur_char.in_shop = true
     # this doesn't work for some reason
     # cur_char.position = row.rect_position + Vector2(100, 50)
@@ -91,8 +99,8 @@ func refresh_shop():
     chars_for_sale.append(cur_char)
 
 func _on_RerollButton_pressed():
-  if get_parent().gold >= get_parent().reroll_cost:
-    get_parent().gold -= get_parent().reroll_cost
+  if game.gold >= game.reroll_cost:
+    game.gold -= game.reroll_cost
     update()
     refresh_shop()
   else:
@@ -100,8 +108,19 @@ func _on_RerollButton_pressed():
 
 
 func _on_BenchBackground_mouse_entered():
-  get_parent().hovering_over_bench = true
-
+  game.hovering_over_bench = true
 
 func _on_BenchBackground_mouse_exited():
-  get_parent().hovering_over_bench = false
+  game.hovering_over_bench = false
+
+func _on_ShopBackground_mouse_entered():
+  game.hovering_over_ui = true
+
+func _on_ShopBackground_mouse_exited():
+  game.hovering_over_ui = false
+
+func _on_TeamBackground_mouse_entered():
+  game.hovering_over_ui = true
+
+func _on_TeamBackground_mouse_exited():
+  game.hovering_over_ui = false

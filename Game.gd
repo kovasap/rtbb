@@ -2,18 +2,22 @@ extends Node2D
 
 const reroll_cost = 2
 var gold = 10
+var max_party_size = 4
 var shop_open = false
 var hovering_over_bench = false
+var hovering_over_ui = false
+var dragging_character = false
 
 var cur_level = -1
 # Each level describes enemy positions for that level.
 # TODO give this better structure.
 const levels = [
   # [Vector2(700, 200)],
-  [Vector2(700, 200), Vector2(700, 300)],
-  [Vector2(700, 200), Vector2(700, 300), Vector2(700, 100)],
   [Vector2(700, 200), Vector2(700, 300), Vector2(700, 100),
    Vector2(850, 200), Vector2(850, 300), Vector2(850, 100)],
+  [Vector2(700, 200), Vector2(700, 300), Vector2(700, 100),
+   Vector2(850, 200), Vector2(850, 300), Vector2(850, 100),
+   Vector2(1000, 200), Vector2(1000, 300), Vector2(1000, 100)],
 ]
 
 var characters = {
@@ -29,8 +33,8 @@ func get_battlefield_characters():
 
 # Pass 'null' to delete the character (e.g. when combining it into a higher tier unit).
 func move_character(character, new_location):
-  for loc in characters:
-    characters[loc].erase(character)
+  for location in characters:
+    characters[location].erase(character)
   if new_location == null:
     remove_child(character)
     character.queue_free()
@@ -62,23 +66,25 @@ func make_character(pos, faction, type):
   return character
 
 const shop_pool = {
-  'Soldier': 1,
-  'Thrower': 1,
-  'Mystic': 1,
-  'Healer': 1,
-  'Assassin': 10,
+  'Soldier': 10,
+  'Thrower': 5,
+  'Mystic': 5,
+  'Healer': 5,
+  'Assassin': 5,
 }
 
 func build_shop_pool():
   for char_type in shop_pool:
     for _i in range(shop_pool[char_type]):
       var pool_character = make_character(Vector2(0, 0), 'friendly', char_type)
-      pool_character.visible = false
+      pool_character.hide_and_disable()
       characters['pool'].append(pool_character)
 
 func load_next_level():
-  for c in characters['enemy']:
-    move_character(c, null)
+  # Done so we don't iterate over an array we are deleting elements from.
+  var enemies = characters['enemy'].duplicate()
+  for e in enemies:
+    move_character(e, null)
   for c in characters['party']:
     c.reset()
   cur_level += 1
@@ -105,10 +111,10 @@ func setup_debug_scenerio():
 # Called when the node enters the scene tree for the first time.
 func _ready():
   build_shop_pool()
-  setup_debug_scenerio()
-  # var friendly = make_character(Vector2(400, 180), 'friendly', 'Soldier')
-  # characters['party'].append(friendly)
-  # load_next_level()
+  # setup_debug_scenerio()
+  var friendly = make_character(Vector2(400, 180), 'friendly', 'Soldier')
+  characters['party'].append(friendly)
+  load_next_level()
   $ShopGUI.open_shop()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
