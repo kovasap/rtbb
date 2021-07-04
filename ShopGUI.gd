@@ -1,44 +1,43 @@
 extends Control
 
-onready var Synergies = preload("res://characters/Synergies.gd").new()
+# onready var Synergies = preload("res://characters/Synergies.gd").new()
 
 const row_height = 150
-onready var game = get_parent()
 
 func update():
   $ShopBackground/VBoxContainer/HBoxContainer/GoldAmountLabel.text = \
-      str(game.gold)
+      str(Game.gold)
 
 # Keyed by synergy name for easier updating.
-var synergies_panel_labels = {}
-
-func update_synergies(synergy_levels):
-  for synergy in synergy_levels:
-    var tiers = Synergies.synergies[synergy]['num_chars_required']
-    synergies_panel_labels[synergy].text = \
-        '%s %s (%s)' % [synergy, synergy_levels[synergy],
-                        PoolStringArray(tiers).join(' ')]
-
-func setup_synergies_panel():
-  for synergy in Synergies.synergies:
-    var row = HBoxContainer.new()
-    row.rect_min_size = Vector2(0, row_height)
-    var synergy_label = RichTextLabel.new()
-    row.add_child(synergy_label)
-    var tiers = Synergies.synergies[synergy]['num_chars_required']
-    synergy_label.size_flags_horizontal = SIZE_EXPAND_FILL
-    synergy_label.text = \
-        '%s 0 (%s)' % [synergy, PoolStringArray(tiers).join(' ')]
-    $TeamBackground/VBoxContainer/Synergies.add_child(row)
-    synergies_panel_labels[synergy] = synergy_label
+# var synergies_panel_labels = {}
+#
+# func update_synergies(synergy_levels):
+#   for synergy in synergy_levels:
+#     var tiers = Synergies.synergies[synergy]['num_chars_required']
+#     synergies_panel_labels[synergy].text = \
+#         '%s %s (%s)' % [synergy, synergy_levels[synergy],
+#                         PoolStringArray(tiers).join(' ')]
+#
+# func setup_synergies_panel():
+#   for synergy in Synergies.synergies:
+#     var row = HBoxContainer.new()
+#     row.rect_min_size = Vector2(0, row_height)
+#     var synergy_label = RichTextLabel.new()
+#     row.add_child(synergy_label)
+#     var tiers = Synergies.synergies[synergy]['num_chars_required']
+#     synergy_label.size_flags_horizontal = SIZE_EXPAND_FILL
+#     synergy_label.text = \
+#         '%s 0 (%s)' % [synergy, PoolStringArray(tiers).join(' ')]
+#     $TeamBackground/VBoxContainer/Synergies.add_child(row)
+#     synergies_panel_labels[synergy] = synergy_label
 
 func update_party_size_description():
   $TeamBackground/VBoxContainer/PartySizeDescription.text = \
-      'Party Size: %s/%s' % [game.characters['party'].size(), game.max_party_size]
+      'Party Size: %s/%s' % [Game.characters['party'].size(), Game.max_party_size]
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-  setup_synergies_panel()
+  # setup_synergies_panel()
   update()
 
 func _process(_delta):
@@ -52,27 +51,27 @@ static func delete_children(node):
 func open_shop():
   $ShopBackground.visible = true
   refresh_shop()
-  game.paused = true
-  game.shop_open = true
-  game.get_node("StartRoundButton").visible = true
+  Game.paused = true
+  Game.shop_open = true
+  Game.get_node("StartRoundButton").visible = true
 
 func close_shop():
   $ShopBackground.visible = false
   clear_shop()
-  game.paused = false
-  game.shop_open = false
-  game.get_node("StartRoundButton").visible = false
+  Game.paused = false
+  Game.shop_open = false
+  Game.get_node("StartRoundButton").visible = false
 
 func clear_shop():
   delete_children($ShopBackground/VBoxContainer/CharsForSale)
-  game.move_all_characters('shop', 'pool')
-  for c in game.characters['pool']:
+  Game.move_all_characters('shop', 'pool')
+  for c in Game.characters['pool']:
     c.in_shop = false
     c.visible = false
 
 func refresh_shop():
   clear_shop()
-  var char_pool = game.characters['pool']
+  var char_pool = Game.characters['pool']
   char_pool.shuffle()
   var cur_row_position = Vector2(0, 50)
   for i in 4:
@@ -92,11 +91,11 @@ func refresh_shop():
     # cur_char.position = row.rect_position + Vector2(100, 50)
     cur_char.position = cur_row_position + Vector2(100, 50)
     cur_row_position += Vector2(0, row_height)
-    game.move_character(cur_char, 'shop')
+    Game.move_character(cur_char, 'shop')
 
 func _on_RerollButton_pressed():
-  if game.gold >= game.reroll_cost:
-    game.gold -= game.reroll_cost
+  if Game.gold >= Game.reroll_cost:
+    Game.gold -= Game.reroll_cost
     update()
     refresh_shop()
   else:
@@ -104,19 +103,19 @@ func _on_RerollButton_pressed():
 
 
 func _on_BenchBackground_mouse_entered():
-  game.hovering_over_bench = true
+  Game.hovering_over_bench = true
 
 func _on_BenchBackground_mouse_exited():
-  game.hovering_over_bench = false
+  Game.hovering_over_bench = false
 
 func _on_ShopBackground_mouse_entered():
-  game.hovering_over_ui = true
+  Game.hovering_over_ui = true
 
 func _on_ShopBackground_mouse_exited():
-  game.hovering_over_ui = false
+  Game.hovering_over_ui = false
 
 func _on_TeamBackground_mouse_entered():
-  game.hovering_over_ui = true
+  Game.hovering_over_ui = true
 
 func _on_TeamBackground_mouse_exited():
-  game.hovering_over_ui = false
+  Game.hovering_over_ui = false

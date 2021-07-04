@@ -30,9 +30,9 @@ many options and synergies.
 
 ### Upgrading Units
 
-**Option 1:** If you purchase multiple units of the same kind from the store,
+~~**Option 1:** If you purchase multiple units of the same kind from the store,
 they combine just like in Underlords.  The store system in
-[SNKRX](https://github.com/a327ex/SNKRX) is great inspiration here.
+[SNKRX](https://github.com/a327ex/SNKRX) is great inspiration here.~~
 
 **Option 2:** Dragging and dropping units onto each other **combines** them,
 such that the base unit is given abilities/stats that the dropped unit has.  
@@ -61,3 +61,9 @@ that play out in a predictable way.  I want the player to feel like they are
 learning with every defeat, just like in every time loop in Outer Wilds.  I
 want to avoid unfair/random mechanics that many roguelikes utilize to perhaps
 artificially extend the game and make it more grindy.
+
+## UI
+
+TODO add bar charts that show distribution of characters in the shop, and
+damage done by characters in the round with
+https://github.com/fenix-hub/godot-engine.easy-charts.

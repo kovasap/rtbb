@@ -14,10 +14,12 @@ func _ready():
     'friendly': preload('res://sprites/chess/white_pawn.png'),
   }
   abilities.append(Slash.instance())
+  add_synergy(Mercenary)
   ._ready()
 
 
 func upgrade(base_character):
+  base_character.add_synergy(Mercenary)
   base_character.update_max_health(base_character.max_health + 4)
   # You cannot scale RigidBody2Ds directly:
   # https://github.com/godotengine/godot/issues/5734

@@ -22,6 +22,7 @@ const faction_colors = {
   'friendly': Color(0, 1, 0, 1),
 }
 var abilities = []
+var synergies = []
 
 # Internal logic vars common to all characters.
 var in_shop = false
@@ -40,6 +41,11 @@ func hide_and_disable():
 func show_and_enable():
   visible = true
   $CollisionShape2D.disabled = false
+
+func add_synergy(new_synergy):
+  synergies.append(new_synergy)
+  $Synergies.add_child(new_synergy.make_tile(faction))
+  new_synergy.update_character(self)
 
 # TODO have health be represented by cracks on the pieces (more cracks -> less
 # remaining health) instead of by these "hearts".
@@ -233,8 +239,10 @@ func _on_Character_input_event_shop(event):
       if get_parent().dragging_character:
         print('cannot buy when moving a character!')
       else:
-        if get_parent().gold >= cost:
+        if get_parent().gold < cost:
+          print('not enough money!')
+        elif not in_shop:
+          print('character not in shop!')
+        else:
           get_parent().buy_character(self)
           _on_Character_input_event(null, event, null)
-        else:
-          print('not enough money!')

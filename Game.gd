@@ -8,17 +8,8 @@ var hovering_over_bench = false
 var hovering_over_ui = false
 var dragging_character = false
 
-var cur_level = -1
-# Each level describes enemy positions for that level.
-# TODO give this better structure.
-const levels = [
-  # [Vector2(700, 200)],
-  [Vector2(700, 200), Vector2(700, 300), Vector2(700, 100),
-   Vector2(850, 200), Vector2(850, 300), Vector2(850, 100)],
-  [Vector2(700, 200), Vector2(700, 300), Vector2(700, 100),
-   Vector2(850, 200), Vector2(850, 300), Vector2(850, 100),
-   Vector2(1000, 200), Vector2(1000, 300), Vector2(1000, 100)],
-]
+var cur_level = 0
+onready var Levels = preload("res://Levels.gd").new()
 
 var characters = {
   'pool': [],
@@ -27,6 +18,8 @@ var characters = {
   'enemy': [],
   'bench': [],
 }
+
+onready var all_synergies = [Mercenary]
 
 func get_battlefield_characters():
   return characters['party'] + characters['enemy']
@@ -55,7 +48,7 @@ var battle_ending = false
 
 var paused = true
 
-onready var Synergies = preload("res://characters/Synergies.gd").new()
+# onready var Synergies = preload("res://characters/Synergies.gd").new()
 
 onready var char_scenes = {
   'Soldier': load("res://characters/Soldier.tscn"),
@@ -86,24 +79,29 @@ func build_shop_pool():
       pool_character.hide_and_disable()
       characters['pool'].append(pool_character)
 
-func load_next_level():
+# Returns true if there is a next level to load (and loads it), false otherwise.
+func load_level(i):
   move_all_characters('enemy', null)
   for c in characters['party']:
     c.reset()
-  cur_level += 1
-  if cur_level >= 2:
-    cur_level = 2
-  for enemy_position in levels[cur_level]:
-    var enemy = make_character(enemy_position, 'enemy', 'Soldier')
-    characters['enemy'].append(enemy)
+  var next_level = Levels.get_level(i)
+  if next_level == null:
+    return false
+  for enemy_type in next_level:
+    for enemy_position in next_level[enemy_type]:
+      var enemy = make_character(enemy_position, 'enemy', enemy_type)
+      characters['enemy'].append(enemy)
+  return true
 
 func buy_character(c):
   gold -= c.cost
-  characters['party'].append(c)
+  move_character(c, 'party')
   $ShopGUI.update()
   c.in_shop = false
-  Synergies.apply_synergies(characters['party'])
-  $ShopGUI.update_synergies(Synergies.get_synergy_levels(characters['party']))
+  for s in all_synergies:
+    s.update_syn('friendly')
+  # Synergies.apply_synergies(characters['party'])
+  # $ShopGUI.update_synergies(Synergies.get_synergy_levels(characters['party']))
 
 func setup_debug_scenerio():
   var friendly = make_character(Vector2(300, 300), 'friendly', 'Assassin')
@@ -117,7 +115,7 @@ func _ready():
   # setup_debug_scenerio()
   var friendly = make_character(Vector2(400, 180), 'friendly', 'Soldier')
   characters['party'].append(friendly)
-  load_next_level()
+  load_level(cur_level)
   $ShopGUI.open_shop()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -130,7 +128,8 @@ func _process(_delta):
     battle_ending_time_elapsed += 1
     if battle_ending_time_elapsed > battle_ending_duration:
       $ShopGUI.open_shop()
-      load_next_level()
+      if not load_level(cur_level):
+        $ResultAnnouncement.text = 'You win!!'
       battle_ending = false
       Engine.time_scale = 1.0
   else:
@@ -146,8 +145,9 @@ func _process(_delta):
       Engine.time_scale = 0.1
       if battle_won:
         $ResultAnnouncement.text = 'Battle %s Won!' % cur_level
+        cur_level += 1
       if battle_lost:
-        $ResultAnnouncement.text = 'Battle %s Lost!' % cur_level
+        $ResultAnnouncement.text = 'Battle %s Lost, Try Again!' % cur_level
       $ResultAnnouncement.visible = true
       battle_ending = true
 

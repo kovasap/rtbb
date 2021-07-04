@@ -6,7 +6,7 @@
 [sub_resource type="CircleShape2D" id=1]
 radius = 21.7312
 
-[sub_resource type="RectangleShape2D" id=4]
+[sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 21.8256, 21.8667 )
 
 [node name="Character" type="RigidBody2D"]
@@ -31,7 +31,16 @@ angular_damp = 0.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
 position = Vector2( 2.08111, -41.6222 )
-shape = SubResource( 4 )
+shape = SubResource( 2 )
+
+[node name="Synergies" type="VBoxContainer" parent="."]
+margin_left = -23.0
+margin_top = -22.0
+margin_right = -11.0
+margin_bottom = 22.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [connection signal="body_entered" from="." to="." method="_on_Character_body_entered"]
 [connection signal="body_exited" from="." to="." method="_on_Character_body_exited"]
