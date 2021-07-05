@@ -1,6 +1,6 @@
 extends RigidBody2D
 
-const min_speed = 100
+const min_speed = 880
 
 var damage = 1
 
@@ -15,9 +15,9 @@ func _process(_delta):
   # not longer interacts with the world.
   if stuck:
     return
-  if self.linear_velocity.length() < min_speed:
+  if linear_velocity.length() < min_speed:
     $CollisionShape2D.disabled = true
-    self.linear_velocity = Vector2(0, 0)
+    linear_velocity = Vector2(0, 0)
     $Sprite.modulate.a = 0.4
     stuck = true
 

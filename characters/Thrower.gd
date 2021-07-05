@@ -15,4 +15,5 @@ func _ready():
     'friendly': preload('res://sprites/chess/white_rook.png'),
   }
   abilities.append(Shoot.instance())
+  add_synergy(Mercenary)
   ._ready()

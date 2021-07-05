@@ -8,6 +8,9 @@ var damage = 1
 var projectile_speed = 1000
 var ability_range = 1000
 
+func _ready():
+  cooldown = 200
+
 
 func use(using_character, battlefield_characters):
   var target = using_character.get_closest_char(battlefield_characters)

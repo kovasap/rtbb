@@ -34,9 +34,9 @@ position = Vector2( 2.08111, -41.6222 )
 shape = SubResource( 2 )
 
 [node name="Synergies" type="VBoxContainer" parent="."]
-margin_left = -23.0
+margin_left = -35.0
 margin_top = -22.0
-margin_right = -11.0
+margin_right = -23.0
 margin_bottom = 22.0
 __meta__ = {
 "_edit_use_anchors_": false

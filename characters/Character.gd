@@ -43,9 +43,10 @@ func show_and_enable():
   $CollisionShape2D.disabled = false
 
 func add_synergy(new_synergy):
-  synergies.append(new_synergy)
-  $Synergies.add_child(new_synergy.make_tile(faction))
-  new_synergy.update_character(self)
+  if !synergies.has(new_synergy):
+    synergies.append(new_synergy)
+    $Synergies.add_child(new_synergy.make_tile(faction))
+    new_synergy.update_character(self)
 
 # TODO have health be represented by cracks on the pieces (more cracks -> less
 # remaining health) instead of by these "hearts".

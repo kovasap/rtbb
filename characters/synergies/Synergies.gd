@@ -1,5 +1,7 @@
 class_name Synergies
 
+# TODO DELETE THIS OLD FILE!!
+
 const synergies = {
   'mercenary': {
     'num_chars_required': [2],

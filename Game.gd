@@ -33,6 +33,14 @@ func move_character(character, new_location):
     character.queue_free()
   else:
     characters[new_location].append(character)
+  if new_location == 'party':
+    for s in all_synergies:
+      s.update_syn('friendly')
+  elif new_location == 'enemy':
+    for s in all_synergies:
+      s.update_syn('enemy')
+  # Synergies.apply_synergies(characters['party'])
+  # $ShopGUI.update_synergies(Synergies.get_synergy_levels(characters['party']))
 
 func move_all_characters(source, dest):
   # Done so we don't iterate over an array we are deleting elements from.
@@ -98,10 +106,6 @@ func buy_character(c):
   move_character(c, 'party')
   $ShopGUI.update()
   c.in_shop = false
-  for s in all_synergies:
-    s.update_syn('friendly')
-  # Synergies.apply_synergies(characters['party'])
-  # $ShopGUI.update_synergies(Synergies.get_synergy_levels(characters['party']))
 
 func setup_debug_scenerio():
   var friendly = make_character(Vector2(300, 300), 'friendly', 'Assassin')

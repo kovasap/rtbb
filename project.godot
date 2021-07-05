@@ -104,8 +104,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Game="*res://Game.tscn"
 Mercenary="*res://characters/synergies/Mercenary.gd"
+Game="*res://Game.tscn"
 
 [display]
 

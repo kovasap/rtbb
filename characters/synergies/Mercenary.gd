@@ -14,7 +14,6 @@ func _ready():
     preload('res://characters/synergies/mercenary_4.png'),
   ]
   num_chars_required = [2, 4]
-  print('MERC READY')
   ._ready()
 
 
