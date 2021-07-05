@@ -67,3 +67,7 @@ artificially extend the game and make it more grindy.
 TODO add bar charts that show distribution of characters in the shop, and
 damage done by characters in the round with
 https://github.com/fenix-hub/godot-engine.easy-charts.
+
+## Misc Ideas
+
+When units die, then solidify into stone pieces that block movement and act like walls.
