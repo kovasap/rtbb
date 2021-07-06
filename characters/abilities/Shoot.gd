@@ -20,7 +20,7 @@ func use(using_character, battlefield_characters):
     return true
   return false
 
-onready var projectile_scene = load("res://Projectile.tscn")
+onready var projectile_scene = load("res://characters/abilities/spawns/Projectile.tscn")
 var projectiles = []
 func shoot(direction):
   var projectile = projectile_scene.instance()

@@ -29,11 +29,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://characters/Healer.gd"
 }, {
-"base": "Synergy",
-"class": "Mercenary",
-"language": "GDScript",
-"path": "res://characters/synergies/Mercenary.gd"
-}, {
 "base": "Character",
 "class": "Mystic",
 "language": "GDScript",
@@ -64,7 +59,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://characters/synergies/Synergies.gd"
 }, {
-"base": "Reference",
+"base": "Node2D",
 "class": "Synergy",
 "language": "GDScript",
 "path": "res://characters/synergies/Synergy.gd"
@@ -84,7 +79,6 @@ _global_script_class_icons={
 "Assassin": "",
 "Character": "",
 "Healer": "",
-"Mercenary": "",
 "Mystic": "",
 "Shoot": "",
 "Slash": "",

@@ -24,6 +24,10 @@ const faction_colors = {
 var abilities = []
 var synergies = []
 
+# https://github.com/godotengine/godot/issues/21461
+# Used to check if the instance in question is a character (e.g. for Projectile
+# collisions).
+const is_character = true
 # Internal logic vars common to all characters.
 var in_shop = false
 var start_position = Vector2(0, 0)
@@ -180,19 +184,8 @@ func _draw():
   # draw_circle(Vector2(0,0), 20, color)
   pass
 
-# https://github.com/godotengine/godot/issues/21461
-const is_character = true
-const Projectile = preload("res://Projectile.gd")
 func _on_Character_body_entered(body):
-  # TODO Figure out how to have projectiles stick into the character and stay
-  if body is Projectile and body.get_parent() != self:
-    update_health(-body.damage)
-    body.collision_layer = 0
-    add_child(body)
-    body.get_node("CollisionShape2D").disabled = true
-    body.stuck = true
-    body.set_owner(self)
-  elif body.get('is_character'):
+  if body.get('is_character'):
     if body.dragging:
       merging_with = body
     elif dragging:

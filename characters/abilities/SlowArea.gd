@@ -16,7 +16,7 @@ func use(using_character, battlefield_characters):
     return true
   return false
 
-onready var aoe_scene = load("res://AreaOfEffect.tscn")
+onready var aoe_scene = load("res://characters/abilities/spawns/AreaOfEffect.tscn")
 var projectiles = []
 func shoot(direction):
   var aoe = aoe_scene.instance()

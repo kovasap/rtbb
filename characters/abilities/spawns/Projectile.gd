@@ -23,3 +23,14 @@ func _process(_delta):
 
 func _on_AliveTimer_timeout():
   $CollisionShape2D.disabled = false
+
+
+func _on_Projectile_body_entered(body):
+  if body.get('is_character'):
+    body.update_health(-damage)
+    collision_layer = 0
+    $CollisionShape2D.disabled = true
+    stuck = true
+    # TODO Figure out how to have projectiles stick into the character and stay
+    # body.add_child(self)
+    # set_owner(body)
