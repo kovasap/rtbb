@@ -1,12 +1,10 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://characters/Character.tscn" type="PackedScene" id=1]
 [ext_resource path="res://characters/Thrower.gd" type="Script" id=2]
-[ext_resource path="res://sprites/chess/rook.png" type="Texture" id=3]
 
 [node name="Character" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
 
 [node name="Sprite" parent="." index="1"]
 position = Vector2( 0.297153, 0.472786 )
-texture = ExtResource( 3 )

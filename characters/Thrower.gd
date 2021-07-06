@@ -11,8 +11,8 @@ func _ready():
   max_health = 4
   speed = 0
   faction_sprites = {
-    'enemy': preload('res://sprites/chess/black_rook.png'),
-    'friendly': preload('res://sprites/chess/white_rook.png'),
+    'enemy': preload('res://sprites/chess/black_knight.png'),
+    'friendly': preload('res://sprites/chess/white_knight.png'),
   }
   abilities.append(Shoot.instance())
   add_synergy(Mercenary)
