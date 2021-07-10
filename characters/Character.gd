@@ -113,9 +113,9 @@ func get_furthest_char(other_characters):
 # Find the closest character to me and go one speed step towards it.  Attack if
 # possible.
 func act():
-  if dead or get_parent().dragging_character:
+  if dead or Game.dragging_character:
     return
-  var closest_opponent = get_closest_char(get_parent().get_battlefield_characters())
+  var closest_opponent = get_closest_char(Game.get_battlefield_characters())
   if closest_opponent == null:
     self.linear_velocity = Vector2(0, 0)
     return
@@ -128,7 +128,7 @@ func act():
   # difference between the current rotation and the angle to the closest
   # character goes to zero.
   # self.angular_velocity = 40 * sin((direction.angle() - self.rotation) / 10)
-  var closest_char = get_closest_char(get_parent().get_battlefield_characters(), false)
+  var closest_char = get_closest_char(Game.get_battlefield_characters(), false)
   var closest_char_distance = self.position.distance_to(closest_char.position)
   var closest_char_direction = self.position.direction_to(closest_char.position)
   # If there is a character that is adjacency_distance away from me and in the
@@ -140,7 +140,7 @@ func act():
   else:
     self.linear_velocity = Vector2(0, 0)
   for ability in abilities:
-    ability.try_to_use(self, get_parent().get_battlefield_characters())
+    ability.try_to_use(self, Game.get_battlefield_characters())
 
 # func _integrate_forces(state):
 #   state.set_linear_velocity(cur_velocity)
@@ -177,7 +177,11 @@ func update_health(delta):
 
 func _process(_delta):
   if dragging:
-    set_start_position(get_viewport().get_mouse_position())
+    # Snap locations to the battlefield grid.
+    var mouse_pos = get_viewport().get_mouse_position()
+    set_start_position(
+      Game.get_node("Battlefield").world_to_tile_coordinates(
+        mouse_pos, true))
 
 func _draw():
   # We draw the circle at 0, 0 relative to THIS SCENE.
@@ -202,13 +206,13 @@ func upgrade(_base_character):
   pass
 
 func drop():
-  get_parent().dragging_character = false
+  Game.dragging_character = false
   dragging = false
   if merging_with:
     merging_with.upgrade(self)
     print('upgrading %s with %s' % [get_class(), merging_with.get_class()])
     merging_with.hide_and_disable()
-    get_parent().move_character(merging_with, null)
+    Game.move_character(merging_with, null)
 
 func _on_Character_input_event(_viewport, event, _shape_idx):
   if event is InputEventMouseButton:
@@ -217,26 +221,26 @@ func _on_Character_input_event(_viewport, event, _shape_idx):
         print('cannot interact with enemy units!')
         return
       if dragging:
-        if get_parent().hovering_over_ui:
+        if Game.hovering_over_ui:
           print('cannot drop character onto ui element!')
         else:
-          if get_parent().hovering_over_bench:
-            get_parent().move_character(self, 'bench')
+          if Game.hovering_over_bench:
+            Game.move_character(self, 'bench')
           drop()
       elif event.pressed:
-        get_parent().dragging_character = true
+        Game.dragging_character = true
         dragging = true
 
 func _on_Character_input_event_shop(event):
   if event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
     if event.pressed:
-      if get_parent().dragging_character:
+      if Game.dragging_character:
         print('cannot buy when moving a character!')
       else:
-        if get_parent().gold < cost:
+        if Game.gold < cost:
           print('not enough money!')
         elif not in_shop:
           print('character not in shop!')
         else:
-          get_parent().buy_character(self)
+          Game.buy_character(self)
           _on_Character_input_event(null, event, null)

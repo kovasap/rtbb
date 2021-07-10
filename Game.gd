@@ -1,3 +1,5 @@
+# Main Game logic.  Can be accessed accross the project with the "Game" Autoloaded scene.
+
 extends Node2D
 
 const reroll_cost = 2
