@@ -2,9 +2,15 @@ extends Ability
 
 class_name Slash
 
+func get_class_name(): return 'Slash'
+
 var cur_target
 
 var damage = 3
+
+func _ready():
+  stats_to_describe.append('damage')
+  ._ready()
 
 func use(using_character, battlefield_characters):
   var target = using_character.get_closest_char(battlefield_characters)

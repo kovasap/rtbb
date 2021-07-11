@@ -2,11 +2,19 @@ extends Ability
 
 class_name SlowArea
 
+func get_class_name(): return 'SlowArea'
+
 var cur_target
 
 var damage = 1
 var projectile_speed = 50
 var ability_range = 1000
+
+func _ready():
+  stats_to_describe.append('damage')
+  stats_to_describe.append('projectile_speed')
+  stats_to_describe.append('ability_range')
+  ._ready()
 
 func use(using_character, battlefield_characters):
   var target = using_character.get_closest_char(battlefield_characters)

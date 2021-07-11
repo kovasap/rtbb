@@ -3,7 +3,7 @@ extends Character
 class_name Mystic
 
 # https://github.com/godotengine/godot/issues/21789
-func get_class(): return 'Mystic'
+func get_class_name(): return 'Mystic'
 
 var SlowArea = load("res://characters/abilities/SlowArea.tscn")
 func _ready():

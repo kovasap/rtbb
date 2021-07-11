@@ -2,7 +2,7 @@ extends Synergy
 
 
 # https://github.com/godotengine/godot/issues/21789
-func get_class(): return 'Mercenary'
+func get_class_name(): return 'Mercenary'
 
 
 func _ready():
@@ -20,7 +20,7 @@ func _ready():
 func update_character(c):
   var level = get_level(c.faction)
   if level == 1:
-    print('Applying level 1 merc synergy to %s' % c.get_class())
+    print('Applying level 1 merc synergy to %s' % c.get_class_name())
     for a in c.abilities:
       a.cooldown = 0.5 * a.cooldown
   elif level == 2:

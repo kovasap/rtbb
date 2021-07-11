@@ -2,6 +2,8 @@ extends Ability
 
 class_name Shoot
 
+func get_class_name(): return 'Shoot'
+
 var cur_target
 
 var damage = 1
@@ -10,6 +12,10 @@ var ability_range = 1000
 
 func _ready():
   cooldown = 200
+  stats_to_describe.append('damage')
+  stats_to_describe.append('projectile_speed')
+  stats_to_describe.append('ability_range')
+  ._ready()
 
 
 func use(using_character, battlefield_characters):

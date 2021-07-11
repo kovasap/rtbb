@@ -3,7 +3,7 @@ extends Character
 class_name Thrower
 
 # https://github.com/godotengine/godot/issues/21789
-func get_class(): return 'Thrower'
+func get_class_name(): return 'Thrower'
 
 var Shoot = load("res://characters/abilities/Shoot.tscn")
 func _ready():

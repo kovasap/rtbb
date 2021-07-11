@@ -3,7 +3,7 @@ extends Character
 class_name Healer
 
 # https://github.com/godotengine/godot/issues/21789
-func get_class(): return 'Healer'
+func get_class_name(): return 'Healer'
 
 var Slash = load("res://characters/abilities/Slash.tscn")
 func _ready():

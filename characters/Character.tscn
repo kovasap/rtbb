@@ -1,13 +1,18 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://characters/Character.gd" type="Script" id=1]
 [ext_resource path="res://sprites/chess/pawn.png" type="Texture" id=2]
+[ext_resource path="res://base_theme.tres" type="Theme" id=3]
+[ext_resource path="res://droid_dynamicfontdata.tres" type="DynamicFontData" id=4]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 21.7312
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 21.8256, 21.8667 )
+
+[sub_resource type="DynamicFont" id=3]
+font_data = ExtResource( 4 )
 
 [node name="Character" type="RigidBody2D"]
 input_pickable = true
@@ -42,6 +47,53 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="StatsPanel" type="PanelContainer" parent="."]
+margin_left = 20.0
+margin_top = -67.0
+margin_right = 191.0
+margin_bottom = 246.0
+theme = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBox" type="VBoxContainer" parent="StatsPanel"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 164.0
+margin_bottom = 306.0
+
+[node name="Class" type="RichTextLabel" parent="StatsPanel/VBox"]
+margin_right = 157.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 0, 25 )
+custom_fonts/normal_font = SubResource( 3 )
+text = "name"
+scroll_active = false
+
+[node name="Crosses" type="RichTextLabel" parent="StatsPanel/VBox"]
+margin_top = 29.0
+margin_right = 157.0
+margin_bottom = 49.0
+rect_min_size = Vector2( 0, 20 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Stats" type="RichTextLabel" parent="StatsPanel/VBox"]
+margin_top = 53.0
+margin_right = 157.0
+margin_bottom = 113.0
+rect_min_size = Vector2( 0, 60 )
+
+[node name="Abilities" type="VBoxContainer" parent="StatsPanel/VBox"]
+margin_top = 117.0
+margin_right = 157.0
+margin_bottom = 217.0
+rect_min_size = Vector2( 0, 100 )
+
 [connection signal="body_entered" from="." to="." method="_on_Character_body_entered"]
 [connection signal="body_exited" from="." to="." method="_on_Character_body_exited"]
 [connection signal="input_event" from="." to="." method="_on_Character_input_event"]
+[connection signal="mouse_entered" from="." to="." method="_on_Character_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_Character_mouse_exited"]

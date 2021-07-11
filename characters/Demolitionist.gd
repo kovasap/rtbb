@@ -3,7 +3,7 @@ extends Character
 class_name Demolitionist
 
 # https://github.com/godotengine/godot/issues/21789
-func get_class(): return 'Demolitionist'
+func get_class_name(): return 'Demolitionist'
 
 # var LayMine = load("res://characters/abilities/LayMine.tscn")
 func _ready():

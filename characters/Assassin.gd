@@ -3,7 +3,7 @@ extends Character
 class_name Assassin
 
 # https://github.com/godotengine/godot/issues/21789
-func get_class(): return 'Assassin'
+func get_class_name(): return 'Assassin'
 
 var Slash = load("res://characters/abilities/Slash.tscn")
 var Teleport = load("res://characters/abilities/Teleport.tscn")
@@ -26,4 +26,5 @@ func upgrade(base_character):
   base_character.add_child(teleport)
   base_character.get_node('Sprite').material = ShaderMaterial.new()
   base_character.get_node('Sprite').material.shader = ShadowShader
+  .upgrade(base_character)
 

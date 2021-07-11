@@ -3,7 +3,7 @@ extends Character
 class_name Soldier
 
 # https://github.com/godotengine/godot/issues/21789
-func get_class(): return 'Soldier'
+func get_class_name(): return 'Soldier'
 
 var Slash = load("res://characters/abilities/Slash.tscn")
 func _ready():

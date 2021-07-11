@@ -23,6 +23,7 @@ const faction_colors = {
 }
 var abilities = []
 var synergies = []
+var crosses = []
 
 # https://github.com/godotengine/godot/issues/21461
 # Used to check if the instance in question is a character (e.g. for Projectile
@@ -37,6 +38,7 @@ var dead = false
 var dragging = false
 var merging_with = null
 var cur_velocity = Vector2(0, 0)
+var hovering = false
 
 func hide_and_disable():
   visible = false
@@ -202,15 +204,40 @@ func _on_Character_body_exited(body):
     merging_with = null
 
 # Make modifications to base character based on what this character is.
-func upgrade(_base_character):
-  pass
+# Overridden by child classes.
+func upgrade(base_character):
+  base_character.crosses.append(get_class_name())
+
+# Overridden by child classes.
+func get_class_name(): return 'Character'
+
+func update_stats_panel():
+  $StatsPanel/VBox/Class.text = get_class_name()
+  $StatsPanel/VBox/Crosses.text = PoolStringArray(crosses).join(' x')
+  $StatsPanel/VBox/Stats.text = PoolStringArray([
+    'Speed: %s' % speed,
+    'Max Health: %s' % max_health,
+  ]).join('\n')
+  # TODO cache the result instead of creating every time.
+  for c in $StatsPanel/VBox/Abilities.get_children():
+    $StatsPanel/VBox/Abilities.remove_child(c)
+    c.queue_free()
+  for a in abilities:
+    $StatsPanel/VBox/Abilities.add_child(a.generate_description())
+
+func show_stats_panel():
+  update_stats_panel()
+  $StatsPanel.visible = true
+
+func hide_stats_panel():
+  $StatsPanel.visible = false
 
 func drop():
   Game.dragging_character = false
   dragging = false
   if merging_with:
     merging_with.upgrade(self)
-    print('upgrading %s with %s' % [get_class(), merging_with.get_class()])
+    print('upgrading %s with %s' % [get_class_name(), merging_with.get_class_name()])
     merging_with.hide_and_disable()
     Game.move_character(merging_with, null)
 
@@ -244,3 +271,11 @@ func _on_Character_input_event_shop(event):
         else:
           Game.buy_character(self)
           _on_Character_input_event(null, event, null)
+
+func _on_Character_mouse_entered():
+  hovering = true
+  show_stats_panel()
+
+func _on_Character_mouse_exited():
+  hovering = false
+  hide_stats_panel()

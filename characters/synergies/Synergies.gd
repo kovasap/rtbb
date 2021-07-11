@@ -15,9 +15,9 @@ static func apply_mercenary_synergy(party_characters, level):
   if level == 0:
     return
   for c in party_characters:
-    if c.get_class() in synergies['mercenary']['characters']:
+    if c.get_class_name() in synergies['mercenary']['characters']:
       if level == 1:
-        print('Applying level 1 merc synergy to %s' % c.get_class())
+        print('Applying level 1 merc synergy to %s' % c.get_class_name())
         for a in c.abilities:
           a.cooldown = 0.5 * a.cooldown
       elif level == 2:
@@ -28,7 +28,7 @@ static func apply_mercenary_synergy(party_characters, level):
 static func get_synergy_levels(party_characters):
   var unique_character_types = {}
   for c in party_characters:
-    unique_character_types[c.get_class()] = null
+    unique_character_types[c.get_class_name()] = null
 
   var synergy_levels = {}
   for synergy in synergies:
