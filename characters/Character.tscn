@@ -48,6 +48,7 @@ __meta__ = {
 }
 
 [node name="StatsPanel" type="PanelContainer" parent="."]
+visible = false
 margin_left = 20.0
 margin_top = -67.0
 margin_right = 191.0

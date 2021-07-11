@@ -18,10 +18,11 @@ func _ready():
   ._ready()
 
 
-func upgrade(base_character):
+func cross(base_character):
   base_character.add_synergy(Mercenary)
   base_character.update_max_health(base_character.max_health + 4)
   # You cannot scale RigidBody2Ds directly:
   # https://github.com/godotengine/godot/issues/5734
   base_character.get_node('Sprite').scale = Vector2(1.5, 1.5)
   base_character.get_node('Hitbox').scale = Vector2(1.5, 1.5)
+  .cross(base_character)

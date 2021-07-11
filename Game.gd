@@ -11,8 +11,6 @@ var hovering_over_ui = false
 var dragging_character = false
 
 var cur_level = 0
-onready var Levels = preload("res://Levels.gd").new()
-
 var characters = {
   'pool': [],
   'shop': [],
@@ -74,6 +72,7 @@ func make_character(pos, faction, type):
   character.set_faction(faction)
   return character
 
+
 const shop_pool = {
   'Soldier': 10,
   'Thrower': 5,
@@ -89,19 +88,6 @@ func build_shop_pool():
       pool_character.hide_and_disable()
       characters['pool'].append(pool_character)
 
-# Returns true if there is a next level to load (and loads it), false otherwise.
-func load_level(i):
-  move_all_characters('enemy', null)
-  for c in characters['party']:
-    c.reset()
-  var next_level = Levels.get_level(i)
-  if next_level == null:
-    return false
-  for enemy_type in next_level:
-    for enemy_position in next_level[enemy_type]:
-      var enemy = make_character(enemy_position, 'enemy', enemy_type)
-      characters['enemy'].append(enemy)
-  return true
 
 func buy_character(c):
   gold -= c.cost
@@ -121,7 +107,7 @@ func _ready():
   # setup_debug_scenerio()
   var friendly = make_character(Vector2(400, 180), 'friendly', 'Soldier')
   characters['party'].append(friendly)
-  load_level(cur_level)
+  Levels.load_level(cur_level)
   $ShopGUI.open_shop()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -134,7 +120,7 @@ func _process(_delta):
     battle_ending_time_elapsed += 1
     if battle_ending_time_elapsed > battle_ending_duration:
       $ShopGUI.open_shop()
-      if not load_level(cur_level):
+      if not Levels.load_level(cur_level):
         $ResultAnnouncement.text = 'You win!!'
       battle_ending = false
       Engine.time_scale = 1.0

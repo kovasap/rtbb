@@ -36,7 +36,7 @@ var health
 var hearts = []
 var dead = false
 var dragging = false
-var merging_with = null
+var crossing_with = null
 var cur_velocity = Vector2(0, 0)
 var hovering = false
 
@@ -193,24 +193,26 @@ func _draw():
 func _on_Character_body_entered(body):
   if body.get('is_character'):
     if body.dragging:
-      merging_with = body
+      crossing_with = body
     elif dragging:
-      body.merging_with = self
+      body.crossing_with = self
     else:
       pass  # No merging
 
 func _on_Character_body_exited(body):
   if body.get('is_character'):
-    merging_with = null
+    crossing_with = null
 
 # Make modifications to base character based on what this character is.
 # Overridden by child classes.
-func upgrade(base_character):
+func cross(base_character):
   base_character.crosses.append(get_class_name())
 
 # Overridden by child classes.
 func get_class_name(): return 'Character'
 
+# TODO show the effect of a potential cross in this window when dragging one
+# character over another
 func update_stats_panel():
   $StatsPanel/VBox/Class.text = get_class_name()
   $StatsPanel/VBox/Crosses.text = PoolStringArray(crosses).join(' x')
@@ -235,11 +237,11 @@ func hide_stats_panel():
 func drop():
   Game.dragging_character = false
   dragging = false
-  if merging_with:
-    merging_with.upgrade(self)
-    print('upgrading %s with %s' % [get_class_name(), merging_with.get_class_name()])
-    merging_with.hide_and_disable()
-    Game.move_character(merging_with, null)
+  if crossing_with:
+    crossing_with.cross(self)
+    print('upgrading %s with %s' % [get_class_name(), crossing_with.get_class_name()])
+    crossing_with.hide_and_disable()
+    Game.move_character(crossing_with, null)
 
 func _on_Character_input_event(_viewport, event, _shape_idx):
   if event is InputEventMouseButton:

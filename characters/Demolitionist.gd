@@ -20,5 +20,5 @@ func _ready():
 
 
 # TODO make base_character explode on death
-func upgrade(base_character):
+func cross(base_character):
   pass

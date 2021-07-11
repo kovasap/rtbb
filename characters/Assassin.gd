@@ -20,11 +20,11 @@ func _ready():
 
 onready var ShadowShader = preload('res://shaders/dropshadow.shader')
 
-func upgrade(base_character):
+func cross(base_character):
   var teleport = Teleport.instance()
   base_character.abilities.push_front(teleport)
   base_character.add_child(teleport)
   base_character.get_node('Sprite').material = ShaderMaterial.new()
   base_character.get_node('Sprite').material.shader = ShadowShader
-  .upgrade(base_character)
+  .cross(base_character)
 
