@@ -127,9 +127,10 @@ func act():
   # https://godotengine.org/qa/107669/rigidbody2d-will-not-move-when-it-has-an-area2d-as-a-child
   # self.rotation = direction.angle()
   # Use of sin here gradually corrects angular_velocity to zero as the
-  # difference between the current rotation and the angle to the closest
-  # character goes to zero.
-  # self.angular_velocity = 40 * sin((direction.angle() - self.rotation) / 10)
+  # difference between the current rotation and the angle_to_normalize_to goes
+  # to zero.
+  var angle_to_normalize_to = 0  # direction.angle()
+  self.angular_velocity = 40 * sin((angle_to_normalize_to - self.rotation) / 10)
   var closest_char = get_closest_char(Game.get_battlefield_characters(), false)
   var closest_char_distance = self.position.distance_to(closest_char.position)
   var closest_char_direction = self.position.direction_to(closest_char.position)
