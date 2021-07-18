@@ -92,7 +92,7 @@ func build_shop_pool():
 func buy_character(c):
   gold -= c.cost
   move_character(c, 'party')
-  $ShopGUI.update()
+  $CanvasLayer/ShopGUI.update()
   c.in_shop = false
 
 func setup_debug_scenerio():
@@ -108,7 +108,7 @@ func _ready():
   var friendly = make_character(Vector2(400, 180), 'friendly', 'Soldier')
   characters['party'].append(friendly)
   Levels.load_level(cur_level)
-  $ShopGUI.open_shop()
+  $CanvasLayer/ShopGUI.open_shop()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -119,11 +119,12 @@ func _process(_delta):
   if battle_ending:
     battle_ending_time_elapsed += 1
     if battle_ending_time_elapsed > battle_ending_duration:
-      $ShopGUI.open_shop()
+      $CanvasLayer/ShopGUI.open_shop()
       if not Levels.load_level(cur_level):
-        $ResultAnnouncement.text = 'You win!!'
+        $CanvasLayer/ResultAnnouncement.text = 'You win!!'
       battle_ending = false
       Engine.time_scale = 1.0
+      $Camera2D.scroll_to_next_level()
   else:
     var battle_won = true
     var battle_lost = true
@@ -136,12 +137,12 @@ func _process(_delta):
     if battle_won or battle_lost:
       Engine.time_scale = 0.1
       if battle_won:
-        $ResultAnnouncement.text = 'Battle %s Won!' % cur_level
+        $CanvasLayer/ResultAnnouncement.text = 'Battle %s Won!' % cur_level
         cur_level += 1
       if battle_lost:
-        $ResultAnnouncement.text = 'Battle %s Lost, Try Again!' % cur_level
-      $ResultAnnouncement.visible = true
+        $CanvasLayer/ResultAnnouncement.text = 'Battle %s Lost, Try Again!' % cur_level
+      $CanvasLayer/ResultAnnouncement.visible = true
       battle_ending = true
 
 func _on_Button_pressed():
-  $ShopGUI.close_shop()
+  $CanvasLayer/ShopGUI.close_shop()

@@ -53,14 +53,14 @@ func open_shop():
   refresh_shop()
   Game.paused = true
   Game.shop_open = true
-  Game.get_node("StartRoundButton").visible = true
+  Game.get_node("CanvasLayer/StartRoundButton").visible = true
 
 func close_shop():
   $ShopBackground.visible = false
   clear_shop()
   Game.paused = false
   Game.shop_open = false
-  Game.get_node("StartRoundButton").visible = false
+  Game.get_node("CanvasLayer/StartRoundButton").visible = false
 
 func clear_shop():
   delete_children($ShopBackground/VBoxContainer/CharsForSale)
@@ -87,6 +87,7 @@ func refresh_shop():
     cost_label.connect("gui_input", cur_char, "_on_Character_input_event_shop")
     cur_char.show_and_enable()
     cur_char.in_shop = true
+    row.add_child(cur_char)
     # this doesn't work for some reason
     # cur_char.position = row.rect_position + Vector2(100, 50)
     cur_char.position = cur_row_position + Vector2(100, 50)
